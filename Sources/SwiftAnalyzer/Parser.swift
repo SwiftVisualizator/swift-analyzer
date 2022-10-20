@@ -23,18 +23,48 @@
 //  THE SOFTWARE.
 //  
 
-import XCTest
-@testable import SwiftAnalyzer
+import Foundation
+import SwiftSyntax
+import SwiftParser
 
 
-final class SwiftAnalyzerTests: XCTestCase {
+let code: String = """
+import Foundation
+
+
+struct Point: Equatable, Codable, Hashable {
+
+    var x: Double = 0.0
+
+    var y: Double = 0.0
+
+}
+
+let p1 = Point(x: 3.0, y: 1.0)
+let p2 = Point(x: -4.0, y: 2.0)
+
+
+print(p1 == p2)
+"""
+
+
+public struct swift_analyzer {
     
-    
-    func test() {
+    public init() {
         
-        _ = swift_analyzer()
+        let rootNode: SourceFileSyntax = Parser.parse(source: code)
+        
+        recursivePrint(node: Syntax(rootNode), indent: 0)
         
     }
     
 }
 
+func recursivePrint(node: Syntax,  indent: Int) {
+    let indentString = String(repeating: "  ", count: indent)
+    let nodeName = String(describing: node.customMirror.subjectType)
+    print(indentString + nodeName)
+    for child in node.children(viewMode: .all) {
+        recursivePrint(node: child, indent: indent + 1)
+    }
+}

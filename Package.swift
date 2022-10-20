@@ -4,17 +4,28 @@ import PackageDescription
 
 let package = Package(
     name: "SwiftAnalyzer",
+    platforms: [
+        .macOS(.v11),
+    ],
     products: [
         .library(
             name: "SwiftAnalyzer",
             targets: ["SwiftAnalyzer"]
         )
     ],
-    dependencies: [],
+    dependencies: [
+        .package(
+            url: "https://github.com/apple/swift-syntax.git",
+            branch: "main"
+        ),
+    ],
     targets: [
         .target(
             name: "SwiftAnalyzer",
-            dependencies: []
+            dependencies: [
+                .product(name: "SwiftSyntax", package: "swift-syntax"),
+                .product(name: "SwiftParser", package: "swift-syntax"),
+            ]
         ),
         .testTarget(
             name: "SwiftAnalyzerTests",
