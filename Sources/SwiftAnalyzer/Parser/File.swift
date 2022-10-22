@@ -24,47 +24,44 @@
 //  
 
 import Foundation
-import SwiftSyntax
-import SwiftParser
 
 
-let code: String = """
-import Foundation
+// MARK: - Model
 
-
-struct Point: Equatable, Codable, Hashable {
-
-    var x: Double = 0.0
-
-    var y: Double = 0.0
-
-}
-
-let p1 = Point(x: 3.0, y: 1.0)
-let p2 = Point(x: -4.0, y: 2.0)
-
-
-print(p1 == p2)
-"""
-
-
-public struct swift_analyzer {
+/// File representation.
+public struct File {
     
-    public init() {
-        
-        let rootNode: SourceFileSyntax = Parser.parse(source: code)
-        
-        recursivePrint(node: Syntax(rootNode), indent: 0)
-        
+    
+    /// Unique identifier type.
+    public typealias Identifier = UUID
+    
+    
+    /// File unique identifier
+    public let identifier: Identifier
+    
+    /// The content of the file.
+    public let content: String
+    
+    /// File absolute path in the current file system.
+    public let path: String
+    
+    
+    /// Crates an instance by assigning all properties.
+    public init(
+        identifier: Identifier,
+        content: String,
+        path: String
+    ) {
+        self.identifier = identifier
+        self.content = content
+        self.path = path
     }
     
-}
-
-func recursivePrint(node: Syntax,  indent: Int) {
-    let indentString = String(repeating: "  ", count: indent)
-    let nodeName = String(describing: node.customMirror.subjectType)
-    print(indentString + nodeName)
-    for child in node.children(viewMode: .all) {
-        recursivePrint(node: child, indent: indent + 1)
+    /// Crates an instance by reading the file.
+    public init(path: String, encoding: String.Encoding = .utf8) throws {
+        self.identifier = UUID()
+        self.path = path
+        self.content = try String(contentsOfFile: path, encoding: encoding)
     }
+    
 }

@@ -23,5 +23,36 @@
 //  THE SOFTWARE.
 //  
 
-import XCTest
-@testable import SwiftAnalyzer
+import Foundation
+import SwiftSyntax
+
+
+/// Module logger
+internal let log = Logger()
+
+
+/// Custom logger.
+internal class Logger {
+    
+    
+    /// Log the AST node.
+    internal func display(
+        _ node: Syntax,
+        numberOfIndents indent: Int = 0
+    ) {
+        
+        let indentString = String(repeating: "  ", count: indent)
+        
+        let nodeName = String(describing: node.customMirror.subjectType)
+        
+        print(indentString + nodeName)
+        
+        for child in node.children(viewMode: .all) {
+            
+            display(child, numberOfIndents: indent + 1)
+            
+        }
+        
+    }
+    
+}
