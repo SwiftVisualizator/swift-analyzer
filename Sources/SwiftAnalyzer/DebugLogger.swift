@@ -28,29 +28,33 @@ import SwiftSyntax
 
 
 /// Module logger
-internal let log = Logger()
+internal let log = DebugLogger()
 
 
 /// Custom logger.
-internal class Logger {
+internal class DebugLogger {
     
     
     /// Log the AST node.
     internal func display(
-        _ node: Syntax,
+        _ node: Node,
         numberOfIndents indent: Int = 0
     ) {
         
         let indentString = String(repeating: "  ", count: indent)
         
-        let nodeName = String(describing: node.customMirror.subjectType)
+        let nodeName = String(describing: node.token.kind)
         
-        print(indentString + nodeName)
+        print(
+            indentString + nodeName,
+            "\"\(node.text)\"",
+            "from (\(node.location.startRow), \(node.location.startColumn))",
+            "to (\(node.location.endRow), \(node.location.endColumn))"
+        )
+
         
-        for child in node.children(viewMode: .all) {
-            
+        node.childen.forEach { child in
             display(child, numberOfIndents: indent + 1)
-            
         }
         
     }

@@ -24,44 +24,43 @@
 //  
 
 import Foundation
+import SwiftSyntax
+import SwiftSyntaxParser
 
 
-// MARK: - Model
+// MARK: - Analyzer
 
-/// File representation.
-public struct File {
+public final class Analyzer {
     
     
-    /// Unique identifier type.
-    public typealias Identifier = UUID
+    /// Already parsed files. Keys are local file paths and values are SwiftSyntax models.
+    private var files: Dictionary<String, Array<Node>>
     
     
-    /// File unique identifier
-    public let identifier: Identifier
-    
-    /// The content of the file.
-    public let content: String
-    
-    /// File absolute path in the current file system.
-    public let path: String
-    
-    
-    /// Crates an instance by assigning all properties.
-    public init(
-        identifier: Identifier,
-        content: String,
-        path: String
-    ) {
-        self.identifier = identifier
-        self.content = content
-        self.path = path
+    /// Creates an instance of the analyzer.
+    public init() {
+        self.files = [:]
     }
     
-    /// Crates an instance by reading the file.
-    public init(path: String, encoding: String.Encoding = .utf8) throws {
-        self.identifier = UUID()
-        self.path = path
-        self.content = try String(contentsOfFile: path, encoding: encoding)
+    /// Parses the source code file string. Stores the source file syntax locally.
+    @discardableResult public func parse(
+        _ string: String,
+        filepath: String
+    ) throws -> Array<Node> {
+        
+        let sourceFileSyntax = try SyntaxParser.parse(source: string)
+        let visitor = Visitor(for: sourceFileSyntax)
+        let forest: Array<Node> = visitor.forest
+        
+        files[filepath] = forest
+        
+        return forest
+        
+    }
+    
+    /// Get children of a node.
+    public static func children<S: SyntaxProtocol>(of node: S) -> SyntaxChildren {
+        return node.children
     }
     
 }
