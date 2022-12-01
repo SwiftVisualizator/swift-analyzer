@@ -68,7 +68,9 @@ internal final class Visitor: SyntaxRewriter {
     
     internal override func visitPre(_ node: Syntax) {
         
-        let syntaxKindDescription: String = String(describing: node.syntaxNodeType)
+        let syntaxKindDescription: String = String(
+            describing: node.syntaxNodeType
+        )
         
         let newNode: Node = Node(
             syntaxKindDescription,
@@ -160,7 +162,6 @@ internal final class Visitor: SyntaxRewriter {
             separator: "\n",
             omittingEmptySubsequences: false
         )
-        print(commentRows, commentRows.count - 1, commentRows.last!.count)
         row = row + commentRows.count - 1
         column = column + commentRows.last!.count
     }

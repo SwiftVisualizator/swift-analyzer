@@ -58,7 +58,7 @@ public final class Node {
         self.location = range
         self.parent = nil
         self.childen = []
-        self.token = Token(kind: "<UNDEFINED>")
+        self.token = Node.Token(kind: nil)
     }
     
     
@@ -73,6 +73,28 @@ public final class Node {
 }
 
 
+// MARK: - Description
+
+extension Node: CustomStringConvertible {
+    
+    
+    public var description: String {
+        var string = "Node("
+        string += "text: \"\(text)\", "
+        if let kind = token.kind {
+            string += "kind: \"\(kind)\", "
+        } else {
+            string += "kind: \"UNKNOWN\", "
+        }
+        string += "start: (\(location.startRow), \(location.startColumn)), "
+        string += "end: (\(location.endRow), \(location.endColumn))"
+        string += ")"
+        return string
+    }
+    
+}
+
+
 // MARK: - Token
 
 extension Node {
@@ -82,14 +104,14 @@ extension Node {
     public struct Token {
         
         /// Token kind string.
-        public var kind: String
+        public var kind: String?
         
     }
     
 }
 
 
-// MARK: - Range
+// MARK: - Location
 
 extension Node {
     
