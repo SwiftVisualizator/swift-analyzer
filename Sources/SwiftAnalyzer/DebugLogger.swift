@@ -41,9 +41,8 @@ internal class DebugLogger {
         numberOfIndents indent: Int = 0
     ) {
         
-        let indentString = String(repeating: "  ", count: indent)
-        
-        let nodeName = String(describing: node.token.kind)
+        let indentString: String = String(repeating: "  ", count: indent)
+        let nodeName: String = node.token.kind
         
         print(
             indentString + nodeName,
@@ -52,7 +51,6 @@ internal class DebugLogger {
             "to (\(node.location.endRow), \(node.location.endColumn))"
         )
 
-        
         node.childen.forEach { child in
             display(child, numberOfIndents: indent + 1)
         }
