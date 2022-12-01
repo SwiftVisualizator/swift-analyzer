@@ -26,7 +26,7 @@
 import Foundation
 
 
-internal let programSample = #"""
+internal let programSample = """
 //
 //
 //  MIT License
@@ -193,4 +193,4 @@ internal struct Solver {
     }
     
 }
-"""#
+"""

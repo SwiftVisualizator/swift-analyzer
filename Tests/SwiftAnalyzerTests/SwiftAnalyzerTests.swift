@@ -31,8 +31,8 @@ final class SwiftAnalyzerTests: XCTestCase {
     
     func testParsing() throws {
         let analyzer = Analyzer()
-        let node = try analyzer.parse(programSample, filepath: "/src/abobus.swift")
-        log.display(node.first!.childen.first!)
+        let forest = try analyzer.parse(programSample, filepath: "/src/abobus.swift")
+        log.display(forest.first!)
     }
     
 }
