@@ -25,23 +25,31 @@
 
 import Foundation
 
-public final class CommandLineTool  {
-    private let arguments: [String]
+struct SourceFinder {
+    var rootPath = "."
     
-    public init(arguments: [String] = CommandLine.arguments) {
-        self.arguments = arguments
-    }
-    
-    public func run() throws {
-        let finder = SourceFinder()
-        let urls = finder.getSourceFiles(allowedExtensions: ["swift"])
-        if urls.isEmpty {
-            print("Not found any *.swift files :(", urls)
-        } else {
-            print("Found *.swift files:")
-            urls.forEach { url in
-                print(url)
+    func getSourceFiles(allowedExtensions: Set<String>) -> [URL] {
+        guard let rootUrl = URL(string: rootPath) else { return [] }
+        
+        var foundUrls: [URL] = []
+        if let enumerator = FileManager.default.enumerator(
+            at: rootUrl,
+            includingPropertiesForKeys: [.isRegularFileKey],
+            options: [.skipsHiddenFiles, .skipsPackageDescendants]
+        ) {
+            for case let fileUrl as URL in enumerator {
+                guard
+                    let fileAttributes = try? fileUrl.resourceValues(forKeys:[.isRegularFileKey]),
+                    fileAttributes.isRegularFile == true
+                else {
+                    continue
+                }
+                if allowedExtensions.contains(fileUrl.pathExtension) {
+                    foundUrls.append(fileUrl)
+                }
             }
         }
+        
+        return foundUrls
     }
 }
