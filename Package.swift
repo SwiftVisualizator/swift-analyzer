@@ -5,12 +5,12 @@ import PackageDescription
 let package = Package(
     name: "SwiftAnalyzer",
     platforms: [
-        .macOS(.v10_15),
+        .macOS(.v10_13),
     ],
     products: [
-        .library(
-            name: "SwiftAnalyzer",
-            targets: ["SwiftAnalyzer"]
+        .executable(
+            name: "swift-analyzer",
+            targets: ["CommandLineRunner"]
         )
     ],
     dependencies: [
@@ -20,6 +20,11 @@ let package = Package(
         )
     ],
     targets: [
+        .executableTarget(
+            name: "CommandLineRunner",
+            dependencies: ["CommandLineCore"]
+        ),
+        .target(name: "CommandLineCore"),
         .target(
             name: "SwiftAnalyzer",
             dependencies: [
