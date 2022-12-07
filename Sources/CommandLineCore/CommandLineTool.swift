@@ -24,6 +24,7 @@
 //  
 
 import Foundation
+import SwiftAnalyzer
 
 public final class CommandLineTool  {
     private let arguments: [String]
@@ -42,6 +43,13 @@ public final class CommandLineTool  {
             urls.forEach { url in
                 print(url)
             }
+        }
+        
+        let foundUrl = urls.first { $0.absoluteString.contains("SpecialOctoSystem.swift") }
+        if let foundUrl, let content = try? String(contentsOf: foundUrl) {
+            let analyzer = Analyzer()
+            let forest = try analyzer.parse(content, filepath: "/src/test.swift")
+            log.display(forest.first!)
         }
     }
 }

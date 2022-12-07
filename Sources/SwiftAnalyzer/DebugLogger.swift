@@ -28,15 +28,13 @@ import SwiftSyntax
 
 
 /// Module logger
-internal let log = DebugLogger()
+public let log = DebugLogger()
 
 
 /// Custom logger.
-internal class DebugLogger {
-    
-    
+public class DebugLogger {
     /// Log the AST node.
-    internal func display(
+    public func display(
         _ node: Node,
         numberOfIndents indent: Int = 0
     ) {
@@ -48,7 +46,6 @@ internal class DebugLogger {
         node.childen.forEach { child in
             display(child, numberOfIndents: indent + 1)
         }
-        
     }
     
 }

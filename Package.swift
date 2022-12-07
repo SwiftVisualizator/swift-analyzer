@@ -24,7 +24,7 @@ let package = Package(
             name: "CommandLineRunner",
             dependencies: ["CommandLineCore"]
         ),
-        .target(name: "CommandLineCore"),
+        .target(name: "CommandLineCore", dependencies: ["SwiftAnalyzer"]),
         .target(
             name: "SwiftAnalyzer",
             dependencies: [
