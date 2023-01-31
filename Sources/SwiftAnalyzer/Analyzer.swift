@@ -31,36 +31,39 @@ import SwiftSyntaxParser
 // MARK: - Analyzer
 
 public final class Analyzer {
-    
-    
-    /// Already parsed files. Keys are local file paths and values are SwiftSyntax models.
-    private var files: Dictionary<String, Array<Node>>
-    
-    
-    /// Creates an instance of the analyzer.
-    public init() {
-        self.files = [:]
-    }
-    
-    /// Parses the source code file string. Stores the source file syntax locally.
-    @discardableResult public func parse(
-        _ string: String,
-        filepath: String
-    ) throws -> Array<Node> {
-        
-        let sourceFileSyntax = try SyntaxParser.parse(source: string)
-        let visitor = Visitor(for: sourceFileSyntax)
-        let forest: Array<Node> = visitor.forest
-        
-        files[filepath] = forest
-        
-        return forest
-        
-    }
-    
-    /// Get children of a node.
-    public static func children<S: SyntaxProtocol>(of node: S) -> SyntaxChildren {
-        return node.children
-    }
-    
+	
+	// MARK: Private properties
+	
+	/// Already parsed files. Keys are local file paths and values are SwiftSyntax models.
+	private var files: Dictionary<String, [Node]>
+	
+	
+	// MARK: Init
+	
+	/// Creates an instance of the analyzer.
+	public init() {
+		self.files = [:]
+	}
+	
+	// MARK: Exposed methods
+	
+	/// Parses the source code file string. Stores the source file syntax locally.
+	@discardableResult public func parse(
+		_ string: String,
+		filepath: String
+	) throws -> Array<Node> {
+		let sourceFileSyntax = try SyntaxParser.parse(source: string)
+		let visitor = Visitor(for: sourceFileSyntax)
+		let forest: Array<Node> = visitor.forest
+		
+		files[filepath] = forest
+		
+		return forest
+	}
+	
+	/// Get children of a node.
+	public static func children<S: SyntaxProtocol>(of node: S) -> SyntaxChildren {
+		return node.children
+	}
+	
 }

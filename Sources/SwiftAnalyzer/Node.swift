@@ -30,107 +30,107 @@ import Foundation
 
 /// Syntax tree node
 public final class Node {
-    
-    
-    // MARK: Properties
-    
-    /// Node text.
-    public var text: String
-    
-    /// Node range in a source file.
-    public var location: Node.Location
-    
-    /// Node wrapped token.
-    public var token: Node.Token
-    
-    /// Optional parent node.
-    public weak var parent: Node?
-    
-    /// Node children list.
-    public private(set) var childen: Array<Node>
-    
-    
-    // MARK: Init
-    
-    /// Creates instance of node from the text.
-    public init(_ text: String, range: Node.Location) {
-        self.text = text
-        self.location = range
-        self.parent = nil
-        self.childen = []
-        self.token = Node.Token(kind: nil)
-    }
-    
-    
-    // MARK: Helper
-    
-    /// Insert child node.
-    public func addChild(_ node: Node) {
-        childen.append(node)
-        node.parent = self
-    }
-    
+	
+	
+	// MARK: Properties
+	
+	/// Node text.
+	public var text: String
+	
+	/// Node range in a source file.
+	public var location: Node.Location
+	
+	/// Node wrapped token.
+	public var token: Node.Token
+	
+	/// Optional parent node.
+	public weak var parent: Node?
+	
+	/// Node children list.
+	public private(set) var children: Array<Node>
+	
+	
+	// MARK: Init
+	
+	/// Creates instance of node from the text.
+	public init(_ text: String, range: Node.Location) {
+		self.text = text
+		self.location = range
+		self.parent = nil
+		self.children = []
+		self.token = Node.Token(kind: nil)
+	}
+	
+	
+	// MARK: Helper
+	
+	/// Insert child node.
+	public func addChild(_ node: Node) {
+		children.append(node)
+		node.parent = self
+	}
+	
 }
 
 
 // MARK: - Description
 
 extension Node: CustomStringConvertible {
-    
-    
-    public var description: String {
-        var string = "Node("
-        string += "text: \"\(text)\", "
-        if let kind = token.kind {
-            string += "kind: \"\(kind)\", "
-        } else {
-            string += "kind: \"UNKNOWN\", "
-        }
-        string += "start: (\(location.startRow), \(location.startColumn)), "
-        string += "end: (\(location.endRow), \(location.endColumn))"
-        string += ")"
-        return string
-    }
-    
+	
+	
+	public var description: String {
+		var string = "Node("
+		string += "text: \"\(text)\", "
+		if let kind = token.kind {
+			string += "kind: \"\(kind)\", "
+		} else {
+			string += "kind: \"UNKNOWN\", "
+		}
+		string += "start: (\(location.startRow), \(location.startColumn)), "
+		string += "end: (\(location.endRow), \(location.endColumn))"
+		string += ")"
+		return string
+	}
+	
 }
 
 
 // MARK: - Token
 
 extension Node {
-    
-    
-    /// Wrapped token.
-    public struct Token {
-        
-        /// Token kind string.
-        public var kind: String?
-        
-    }
-    
+	
+
+	/// Wrapped token.
+	public struct Token {
+		
+		/// Token kind string.
+		public var kind: String?
+		
+	}
+	
 }
 
 
 // MARK: - Location
 
 extension Node {
-    
-    
-    /// Node range in a file.
-    public struct Location {
-        
-        /// Node start row.
-        public var startRow: Int
-        
-        /// Node start column.
-        public var startColumn: Int
-        
-        /// Node end row.
-        public var endRow: Int
-        
-        /// Node end column.
-        public var endColumn: Int
-        
-    }
-    
+	
+	
+	/// Node range in a file.
+	public struct Location {
+		
+		/// Node start row.
+		public var startRow: Int
+		
+		/// Node start column.
+		public var startColumn: Int
+		
+		/// Node end row.
+		public var endRow: Int
+		
+		/// Node end column.
+		public var endColumn: Int
+		
+	}
+	
 }

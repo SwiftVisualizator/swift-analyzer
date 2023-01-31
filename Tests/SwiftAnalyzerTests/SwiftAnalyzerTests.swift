@@ -26,13 +26,12 @@
 import XCTest
 @testable import SwiftAnalyzer
 
-
 final class SwiftAnalyzerTests: XCTestCase {
-    
-    func testParsing() throws {
-        let analyzer = Analyzer()
-        let forest = try analyzer.parse(programSample, filepath: "/src/abobus.swift")
-        log.display(forest.first!)
-    }
-    
+	
+	func testParsing() throws {
+		let analyzer = Analyzer()
+		let forest = try analyzer.parse(programSample, filepath: "/src/abobus.swift")
+		log.display(forest.first!)
+	}
+	
 }

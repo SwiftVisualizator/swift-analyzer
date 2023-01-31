@@ -26,26 +26,26 @@
 import Foundation
 import SwiftSyntax
 
-
 /// Module logger
 public let log = DebugLogger()
 
+// MARK: - Logger
 
 /// Custom logger.
 public class DebugLogger {
-    /// Log the AST node.
-    public func display(
-        _ node: Node,
-        numberOfIndents indent: Int = 0
-    ) {
-        
-        let indentString: String = String(repeating: "  ", count: indent)
-        
-        print(indentString + node.description)
-
-        node.childen.forEach { child in
-            display(child, numberOfIndents: indent + 1)
-        }
-    }
-    
+	
+	/// Log the AST node.
+	public func display(
+		_ node: Node,
+		numberOfIndents indent: Int = 0
+	) {
+		let indentString: String = String(repeating: "  ", count: indent)
+		
+		print(indentString + node.description)
+		
+		node.children.forEach { child in
+			display(child, numberOfIndents: indent + 1)
+		}
+	}
+	
 }

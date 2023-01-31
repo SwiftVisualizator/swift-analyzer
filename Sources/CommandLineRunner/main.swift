@@ -28,7 +28,7 @@ import CommandLineCore
 let tool = CommandLineTool()
 
 do {
-    try tool.run()
+	try tool.run()
 } catch {
-    print(error)
+	print(error)
 }

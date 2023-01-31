@@ -26,30 +26,32 @@
 import Foundation
 
 struct SourceFinder {
-    var rootPath = "."
-    
-    func getSourceFiles(allowedExtensions: Set<String>) -> [URL] {
-        guard let rootUrl = URL(string: rootPath) else { return [] }
-        
-        var foundUrls: [URL] = []
-        if let enumerator = FileManager.default.enumerator(
-            at: rootUrl,
-            includingPropertiesForKeys: [.isRegularFileKey],
-            options: [.skipsHiddenFiles, .skipsPackageDescendants]
-        ) {
-            for case let fileUrl as URL in enumerator {
-                guard
-                    let fileAttributes = try? fileUrl.resourceValues(forKeys:[.isRegularFileKey]),
-                    fileAttributes.isRegularFile == true
-                else {
-                    continue
-                }
-                if allowedExtensions.contains(fileUrl.pathExtension) {
-                    foundUrls.append(fileUrl)
-                }
-            }
-        }
-        
-        return foundUrls
-    }
+
+	var rootPath = "."
+	
+	func getSourceFiles(allowedExtensions: Set<String>) -> [URL] {
+		guard let rootUrl = URL(string: rootPath) else { return [] }
+		
+		var foundUrls: [URL] = []
+		if let enumerator = FileManager.default.enumerator(
+			at: rootUrl,
+			includingPropertiesForKeys: [.isRegularFileKey],
+			options: [.skipsHiddenFiles, .skipsPackageDescendants]
+		) {
+			for case let fileUrl as URL in enumerator {
+				guard
+					let fileAttributes = try? fileUrl.resourceValues(forKeys:[.isRegularFileKey]),
+					fileAttributes.isRegularFile == true
+				else {
+					continue
+				}
+				if allowedExtensions.contains(fileUrl.pathExtension) {
+					foundUrls.append(fileUrl)
+				}
+			}
+		}
+		
+		return foundUrls
+	}
+
 }
