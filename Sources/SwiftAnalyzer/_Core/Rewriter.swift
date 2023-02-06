@@ -27,10 +27,10 @@ import Foundation
 import SwiftSyntax
 
 
-// MARK: - Visitor
+// MARK: - Rewriter
 
 /// Local visitor for source file traversals.
-internal final class Visitor: SyntaxRewriter {
+internal final class Rewriter: SyntaxRewriter {
 	
 	// MARK: Exposed properties
 	
@@ -50,35 +50,34 @@ internal final class Visitor: SyntaxRewriter {
 	// MARK: Init
 	
 	internal init(for syntax: SourceFileSyntax) {
-		
 		self.forest = []
 		self.row = 0
 		self.column = 0
 		
 		super.init()
 		
-		self.visitPre(syntax._syntaxNode)
-		_ = self.visit(syntax)
-		
+		visitPre(syntax._syntaxNode)
+		_ = visit(syntax)
 	}
 	
 	
 	// MARK: Override
 	
 	internal override func visitPre(_ node: Syntax) {
-		
 		let syntaxKindDescription: String = String(
 			describing: node.syntaxNodeType
 		)
 		
+		let range = Node.Range(
+			startRow: row,
+			startColumn: column,
+			endRow: row,
+			endColumn: column
+		)
+		
 		let newNode: Node = Node(
 			syntaxKindDescription,
-			range: Node.Location(
-				startRow: row,
-				startColumn: column,
-				endRow: row,
-				endColumn: column
-			)
+			range: range
 		)
 		
 		if let currentNode {
@@ -88,28 +87,25 @@ internal final class Visitor: SyntaxRewriter {
 		}
 		
 		currentNode = newNode
-		
 	}
 	
 	internal override func visit(_ token: TokenSyntax) -> Syntax {
-		
-		currentNode.location.startRow = row
-		currentNode.location.startColumn = column
+		currentNode.range.startRow = row
+		currentNode.range.startColumn = column
 		
 		token.leadingTrivia.forEach(processTriviaPiece)
 		processToken(token)
 		token.trailingTrivia.forEach(processTriviaPiece)
 		
-		currentNode.location.endRow = row
-		currentNode.location.endColumn = column
+		currentNode.range.endRow = row
+		currentNode.range.endColumn = column
 		
 		return token._syntaxNode
-		
 	}
 	
 	internal override func visitPost(_ node: Syntax) {
-		currentNode.location.endRow = row
-		currentNode.location.endColumn = column
+		currentNode.range.endRow = row
+		currentNode.range.endColumn = column
 		currentNode = currentNode.parent
 	}
 	
@@ -117,7 +113,6 @@ internal final class Visitor: SyntaxRewriter {
 	// MARK: Helper
 	
 	private func processToken(_ token: TokenSyntax) {
-		
 		currentNode.text = token.text
 		currentNode.token = {
 			var kind = String(describing: token.tokenKind)
@@ -131,25 +126,24 @@ internal final class Visitor: SyntaxRewriter {
 		}()
 		
 		column = column + token.text.count
-		
 	}
 	
 	private func processTriviaPiece(_ piece: TriviaPiece) {
 		switch piece {
-		case .spaces(let count):
+		case let .spaces(count):
 			column = column + count
-		case .tabs(let count):
+		case let .tabs(count):
 			column = column + count * 4
 		case .newlines(let count), .carriageReturns(let count), .carriageReturnLineFeeds(let count):
 			row = row + count
 			column = 0
-		case .lineComment(let text):
+		case let .lineComment(text):
 			processComment(text)
-		case .blockComment(let text):
+		case let .blockComment(text):
 			processComment(text)
-		case .docLineComment(let text):
+		case let .docLineComment(text):
 			processComment(text)
-		case .docBlockComment(let text):
+		case let .docBlockComment(text):
 			processComment(text)
 		case .verticalTabs, .formfeeds, .garbageText:
 			break
@@ -161,7 +155,7 @@ internal final class Visitor: SyntaxRewriter {
 			separator: "\n",
 			omittingEmptySubsequences: false
 		)
-		row = row + commentRows.count - 1
+		row = row + (commentRows.count - 1)
 		column = column + commentRows.last!.count
 	}
 	

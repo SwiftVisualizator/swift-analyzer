@@ -24,14 +24,32 @@
 //  
 
 import XCTest
+import SwiftSyntax
+import SwiftSyntaxParser
 @testable import SwiftAnalyzer
 
 final class SwiftAnalyzerTests: XCTestCase {
 	
 	func testParsing() throws {
-		let analyzer = Analyzer()
-		let forest = try analyzer.parse(programSample, filepath: "/src/abobus.swift")
-		log.display(forest.first!)
+		//		let analyzer = Analyzer()
+		//		let forest = try analyzer.parse(smolSample, filepath: "/src/abobus.swift")
+		
+		let sourceFileSyntax = try SyntaxParser.parse(
+			source: smolSample
+		)
+		
+		let visitor = DeclarationVisitor()
+		visitor.walk(sourceFileSyntax)
+		
+		print("")
+		print(visitor.classDeclarations.map(\.description).joined(separator: "\n"))
+		print("")
+		print(visitor.protocolDeclarations.map(\.description).joined(separator: "\n"))
+		print("")
+		print(visitor.structureDeclarations.map(\.description).joined(separator: "\n"))
+		print("")
+		print(visitor.variableDeclarations.map(\.description).joined(separator: "\n"))
+		print("")
 	}
 	
 }

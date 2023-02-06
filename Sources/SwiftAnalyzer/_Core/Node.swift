@@ -24,46 +24,69 @@
 //  
 
 import Foundation
-import SwiftSyntax
-import SwiftSyntaxParser
 
 
-// MARK: - Analyzer
+// MARK: - Node
 
-public final class Analyzer {
+/// Syntax tree node
+public final class Node {
 	
-	// MARK: Private properties
+	// MARK: Exposed properties
 	
-	/// Already parsed files. Keys are local file paths and values are SwiftSyntax models.
-	private var files: Dictionary<String, [Node]>
+	/// Node text.
+	public var text: String
+	
+	/// Node range in a source file.
+	public var range: Node.Range
+	
+	/// Node wrapped token.
+	public var token: Node.Token
+	
+	/// Optional parent node.
+	public weak var parent: Node?
+	
+	/// Node children list.
+	public private(set) var children: Array<Node>
 	
 	
 	// MARK: Init
 	
-	/// Creates an instance of the analyzer.
-	public init() {
-		self.files = [:]
+	/// Creates instance of node from the text.
+	public init(_ text: String, range: Node.Range) {
+		self.text = text
+		self.range = range
+		self.parent = nil
+		self.children = []
+		self.token = Node.Token(kind: nil)
 	}
 	
-	// MARK: Exposed methods
 	
-	/// Parses the source code file string. Stores the source file syntax locally.
-	@discardableResult public func parse(
-		_ string: String,
-		filepath: String
-	) throws -> Array<Node> {
-		let sourceFileSyntax = try SyntaxParser.parse(source: string)
-		let visitor = Visitor(for: sourceFileSyntax)
-		let forest: Array<Node> = visitor.forest
-		
-		files[filepath] = forest
-		
-		return forest
+	// MARK: Helper
+	
+	/// Insert child node.
+	public func addChild(_ node: Node) {
+		children.append(node)
+		node.parent = self
 	}
 	
-	/// Get children of a node.
-	public static func children<S: SyntaxProtocol>(of node: S) -> SyntaxChildren {
-		return node.children
+}
+
+// MARK: - Description
+
+extension Node: CustomStringConvertible {
+	
+	public var description: String {
+		var string = "Node("
+		string += "text: \"\(text)\", "
+		if let kind = token.kind {
+			string += "kind: \"\(kind)\", "
+		} else {
+			string += "kind: \"UNKNOWN\", "
+		}
+		string += "start: (\(range.startRow), \(range.startColumn)), "
+		string += "end: (\(range.endRow), \(range.endColumn))"
+		string += ")"
+		return string
 	}
 	
 }
