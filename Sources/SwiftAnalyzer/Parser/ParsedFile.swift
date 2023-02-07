@@ -15,7 +15,9 @@ public struct ParsedFile {
 	// MARK: Exposed properties
 	
 	/// File name.
-	public let fileName: String
+	public var fileName: String? {
+		return fileUrl?.lastPathComponent
+	}
 	
 	/// File absolute URL.
 	public let fileUrl: URL?
@@ -26,8 +28,7 @@ public struct ParsedFile {
 	// MARK: Init
 	
 	/// Creates an instance memberwise.
-	init(fileName: String, fileUrl: URL?, content: String) {
-		self.fileName = fileName
+	init(fileUrl: URL?, content: String) {
 		self.fileUrl = fileUrl
 		self.content = content
 	}

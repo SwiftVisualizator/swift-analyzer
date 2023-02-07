@@ -21,9 +21,7 @@ public enum ParserError: Error {
 	case noSuchFile(url: URL?)
 	
 	case notFile(url: URL?)
-	
-	case notDirectory(url: URL?)
-	
-	case notSwiftFile(url: URL?)
+
+	case notAllowedFileExtension(url: URL?, allowedExtensions: Set<String>?)
 	
 }

@@ -33,10 +33,7 @@ public final class Analyzer {
 	
 	// MARK: Private properties
 	
-	/// Already parsed files. Keys are local file paths and values are SwiftSyntax models.
-	private var files: Dictionary<String, [Node]> = [:]
-
-	private var topLevelNodes: [Node] = []
+	private var files: [ParsedFile] = []
 	
 	
 	// MARK: Init
@@ -48,38 +45,43 @@ public final class Analyzer {
 	
 	// MARK: Exposed methods
 	
-	@discardableResult public func parse(
-		_ string: String,
-		filepath: String
-	) throws -> Array<Node> {
-		let sourceFileSyntax = try SyntaxParser.parse(source: string)
-		let visitor = Rewriter(for: sourceFileSyntax)
-		let forest: Array<Node> = visitor.forest
-		
-		files[filepath] = forest
-		
-		return forest
+	public func consume(file: ParsedFile) {
+		self.files.append(file)
 	}
 	
-	public func analyze(string: String) throws {
-		let sourceFileSyntax = try SyntaxParser.parse(source: string)
-		
-		let rewriter = Rewriter(for: sourceFileSyntax)
-		let forest: [Node] = rewriter.forest
-		
-		let declarationVisitor = DeclarationVisitor()
-		declarationVisitor.walk(sourceFileSyntax)
-		let classes = declarationVisitor.classDeclarations
-		
-		print(classes.map(\.description).joined(separator: "\n"))
+	public func consume(files: [ParsedFile]) {
+		self.files.append(contentsOf: files)
 	}
 	
-	public func analyze(file: ParsedFile) throws {
-		let sourceFileSyntax = try SyntaxParser.parse(source: file.content)
-	}
-	
-	public func accumulate(directory: PardsedDirectory) {
-		
+	public func analyze() throws {
+		try files.forEach { file in
+			let sourceFileSyntax = try SyntaxParser.parse(
+				source: file.content
+			)
+			
+			let rewriter = Rewriter(for: sourceFileSyntax)
+			let forest: [Node] = rewriter.forest
+			
+			let declarationVisitor = DeclarationVisitor()
+			declarationVisitor.walk(sourceFileSyntax)
+			let classes = declarationVisitor.classDeclarations
+			let protocols = declarationVisitor.protocolDeclarations
+			let structs = declarationVisitor.structureDeclarations
+			let variables = declarationVisitor.variableDeclarations
+			
+			print("======================================================")
+			print("  Processing \"\(file.fileName ?? "UNKNOWN FILE")\" ")
+			print("======================================================")
+			print("1. Found classes:")
+			print(classes.map({ "  " + $0.description }).joined(separator: "\n"))
+			print("2. Found protocols:")
+			print(protocols.map({ "  " + $0.description }).joined(separator: "\n"))
+			print("3. Found variables:")
+			print(variables.map({ "  " + $0.description }).joined(separator: "\n"))
+			print("4. Found structs:")
+			print(structs.map({ "  " + $0.description }).joined(separator: "\n"))
+			print("======================================================")
+		}
 	}
 	
 }

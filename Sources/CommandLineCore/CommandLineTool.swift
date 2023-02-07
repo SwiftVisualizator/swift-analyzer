@@ -35,23 +35,34 @@ public final class CommandLineTool  {
 	}
 	
 	public func run() throws {
-		let finder = SourceFinder()
-		let urls = finder.getSourceFiles(allowedExtensions: ["swift"])
-		if urls.isEmpty {
-			print("Not found any *.swift files :(", urls)
-		} else {
-			print("Found *.swift files:")
-			urls.forEach { url in
-				print(url)
-			}
-		}
 		
-		let foundUrl = urls.first { $0.absoluteString.contains("SpecialOctoSystem.swift") }
-		if let foundUrl, let content = try? String(contentsOf: foundUrl) {
-			let analyzer = Analyzer()
-			let forest = try analyzer.parse(content, filepath: "/src/test.swift")
-			log.display(forest.first!)
-		}
+		let parser = Parser()
+		let files = try parser.parse(
+			directory: URL(string: "/Users/whutao/code/swift-analyzer")!,
+			allowedExtensions: ["swift"]
+		)
+		
+		let analyzer = Analyzer()
+		analyzer.consume(files: files)
+		try analyzer.analyze()
+		
+//		let finder = SourceFinder()
+//		let urls = finder.getSourceFiles(allowedExtensions: ["swift"])
+//		if urls.isEmpty {
+//			print("Not found any *.swift files :(", urls)
+//		} else {
+//			print("Found *.swift files:")
+//			urls.forEach { url in
+//				print(url)
+//			}
+//		}
+//
+//		let foundUrl = urls.first { $0.absoluteString.contains("SpecialOctoSystem.swift") }
+//		if let foundUrl, let content = try? String(contentsOf: foundUrl) {
+//			let analyzer = Analyzer()
+//			let forest = try analyzer.parse(content, filepath: "/src/test.swift")
+//			log.display(forest.first!)
+//		}
 	}
 	
 }

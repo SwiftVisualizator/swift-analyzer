@@ -22,19 +22,16 @@ public final class Parser: ParserProtocol {
 	
 	// MARK: Init
 	
-	public init() {
+	public init(){
 		
 	}
 	
 	// MARK: Exposed properties
 	
-	func parse(file fileUrl: URL) throws -> ParsedFile {
-		guard
-			fileManager.fileExists(atPath: fileUrl.absoluteString)
-		else {
-			throw ParserError.noSuchFile(url: fileUrl)
-		}
-		
+	public func parse(
+		file fileUrl: URL,
+		allowedExtensions: Set<String>
+	) throws -> ParsedFile {
 		guard
 			fileUrl.isFile
 		else {
@@ -42,15 +39,17 @@ public final class Parser: ParserProtocol {
 		}
 		
 		guard
-			fileUrl.pathExtension == "swift"
+			allowedExtensions.contains(fileUrl.pathExtension)
 		else {
-			throw ParserError.notSwiftFile(url: fileUrl)
+			throw ParserError.notAllowedFileExtension(
+				url: fileUrl,
+				allowedExtensions: allowedExtensions
+			)
 		}
 		
 		do {
 			let content = try String(contentsOf: fileUrl, encoding: defaultEncoding)
 			return ParsedFile(
-				fileName: fileUrl.lastPathComponent,
 				fileUrl: fileUrl,
 				content: content
 			)
@@ -59,13 +58,10 @@ public final class Parser: ParserProtocol {
 		}
 	}
 	
-	func parse(directory directoryUrl: URL) throws -> PardsedDirectory {
-		guard
-			directoryUrl.isDirectory
-		else {
-			throw ParserError.notDirectory(url: directoryUrl)
-		}
-		
+	public func parse(
+		directory directoryUrl: URL,
+		allowedExtensions: Set<String>
+	) throws -> [ParsedFile] {
 		guard
 			let directoryEnumerator = fileManager.enumerator(
 				at: directoryUrl,
@@ -76,25 +72,43 @@ public final class Parser: ParserProtocol {
 			throw ParserError.cannotReadDirectory(url: directoryUrl)
 		}
 		
-		var result: PardsedDirectory = PardsedDirectory()
+		let foundFileUrls: [URL] = directoryEnumerator
+			.compactMap { $0 as? URL }
+			.filter(\.isFile)
 		
-		let foundUrls: Array<URL> = fileManager.enumerator(
-			at: directoryUrl,
-			includingPropertiesForKeys: [.isRegularFileKey],
-			options: [.skipsHiddenFiles, .skipsPackageDescendants]
-		)?.compactMap { $0 as? URL } ?? []
-		
-		try foundUrls.forEach { url in
-			if url.isFile {
-				let parsedFile = try parse(file: url)
-				result.files.append(parsedFile)
-			} else if url.isDirectory {
-				let parsedDirectory = try parse(directory: url)
-				result.directories.append(parsedDirectory)
+		return foundFileUrls.compactMap { foundUrl in
+			do {
+				return try parse(
+					file: foundUrl,
+					allowedExtensions: allowedExtensions
+				)
+			} catch let error {
+				if let error = error as? ParserError {
+					switch error {
+					case let .cannotReadFile(url):
+						if let url {
+							print("Cannot read file \(url)")
+						}
+					case let .noSuchFile(url):
+						if let url {
+							print("No such file \(url)")
+						}
+					case let .notFile(url):
+						if let url {
+							print("Not a file \(url)")
+						}
+					case let .notAllowedFileExtension(url, extensions):
+						if let url, let extensions {
+							print("File \(url) is not \(extensions)")
+						}
+					case .cannotReadDirectory, .unknown:
+						break
+					}
+				}
+				
+				return nil
 			}
 		}
-		
-		return result
 	}
 	
 }
