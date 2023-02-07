@@ -10,39 +10,35 @@ import SwiftSyntax
 
 // MARK: - Model
 
-/// Struct declaration.
-public struct StructDeclaration: Declaration {
+/// Class or actor declaration.
+public struct ClassDeclaration: Declaration, Namable, Keywordable, Wrappable, Modifiable, GenericParametable {
 	
 	// MARK: - Exposed properties
 	
-	/// Declaration list(ordered) of wrappers. For example, `@main`, `@available(iOS 13, *)`.
-	public internal(set) var wrappers: [Wrapper]
+	public let identifier: String = UUID().uuidString
 	
-	/// Declaration modifiers. For exmaple, `public`, `final`.
-	public internal(set) var modifiers: [Modifier]
+	public let wrappers: [Wrapper]
 	
-	/// Static keyword of the declaration. Can be *string*.
-	public internal(set) var keyword: String
+	public let modifiers: [Modifier]
 	
-	/// Struct name.
-	public internal(set) var name: String
+	public let keyword: String
 	
-	/// Ordered list of declaration inheritances. Inheritances are represented as protocol names. For example, `: A, B`.
-	public internal(set) var inheritances: [String]
+	public let name: String
 	
-	/// Ordered list of generic parameters. For example, `<A: Codable, B>`.
-	public internal(set) var genericParameters: [GenericParameter]
+	public let inheritances: [String]
+	
+	public let genericParameters: [GenericParameter]
 	
 	// MARK: Init
 	
 	/// Creates an instance from SwiftSyntax model.
-	init(node: StructDeclSyntax) {
+	init(node: ClassDeclSyntax) {
 		self.wrappers = node.attributes?
 			.compactMap { $0.as(AttributeSyntax.self) }
 			.map(Wrapper.init(node:)) ?? []
 		self.modifiers = node.modifiers?
 			.map(Modifier.init(node:)) ?? []
-		self.keyword = node.structKeyword.text.trimmed
+		self.keyword = node.classOrActorKeyword.text.trimmed
 		self.name = node.identifier.text.trimmed
 		self.inheritances = node.inheritanceClause?.inheritedTypeCollection
 			.map(\.typeName.description.trimmed) ?? []
@@ -54,7 +50,7 @@ public struct StructDeclaration: Declaration {
 
 // MARK: - CustomStringConvertible
 
-extension StructDeclaration: CustomStringConvertible {
+extension ClassDeclaration: CustomStringConvertible {
 	
 	public var description: String {
 		var result: String = ""

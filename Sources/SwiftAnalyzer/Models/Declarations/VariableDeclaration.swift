@@ -11,27 +11,25 @@ import SwiftSyntax
 // MARK: - Model
 
 /// Variable(including top-level) declaration
-public struct VariableDeclaration: Declaration {
+public struct VariableDeclaration: Declaration, Namable, Keywordable, Wrappable, Modifiable {
 	
 	// MARK: - Exposed properties
 	
-	/// Declaration list(ordered) of wrappers. For example, `@main`, `@available(iOS 13, *)`.
-	public internal(set) var wrappers: [Wrapper]
+	public let identifier: String = UUID().uuidString
 	
-	/// Declaration modifiers. For exmaple, `public`, `open`.
-	public internal(set) var modifiers: [Modifier]
+	public let wrappers: [Wrapper]
 	
-	/// Static keyword of the declaration. Can be *let* or *var*.
-	public internal(set) var keyword: String
+	public let modifiers: [Modifier]
 	
-	/// Variable name.
-	public internal(set) var name: String
+	public let keyword: String
+	
+	public let name: String
 	
 	/// Variable type if present.
-	public internal(set) var type: String?
+	public let type: String?
 	
 	/// Initial value if present.
-	public internal(set) var initialValue: String?
+	public let initialValue: String?
 	
 	/// The variable accessors.
 	public let accessors: [Accessor]

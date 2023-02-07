@@ -11,24 +11,21 @@ import SwiftSyntax
 // MARK: - Model
 
 /// Protocol declaration.
-public struct ProtocolDeclaration: Declaration {
+public struct ProtocolDeclaration: Declaration, Namable, Keywordable, Wrappable, Modifiable {
 	
 	// MARK: - Exposed properties
 	
-	/// Declaration list(ordered) of wrappers. For example, `@main`, `@available(iOS 13, *)`.
-	public internal(set) var wrappers: [Wrapper]
+	public let identifier: String = UUID().uuidString
 	
-	/// Declaration modifiers. For exmaple, `public`, `open`.
-	public internal(set) var modifiers: [Modifier]
+	public let wrappers: [Wrapper]
 	
-	/// Static keyword of the declaration. Can be *protcol* only.
-	public internal(set) var keyword: String
+	public let modifiers: [Modifier]
+
+	public let keyword: String
 	
-	/// Protocol name.
-	public internal(set) var name: String
-	
-	/// Ordered list of the protocol inheritances. Inheritances are represented as protocol names.
-	public internal(set) var inheritances: [String]
+	public let name: String
+
+	public let inheritances: [String]
 	
 	// MARK: Init
 	

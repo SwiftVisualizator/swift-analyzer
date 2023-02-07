@@ -12,4 +12,7 @@ import Foundation
 /// Declaration type.
 public protocol Declaration {
 	
+	/// Readonly randomly-generated identifier.
+	var identifier: String { get }
+	
 }

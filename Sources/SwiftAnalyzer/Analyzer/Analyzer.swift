@@ -64,10 +64,10 @@ public final class Analyzer {
 			
 			let declarationVisitor = DeclarationVisitor()
 			declarationVisitor.walk(sourceFileSyntax)
-			let classes = declarationVisitor.classDeclarations
-			let protocols = declarationVisitor.protocolDeclarations
-			let structs = declarationVisitor.structureDeclarations
-			let variables = declarationVisitor.variableDeclarations
+			let classes = declarationVisitor.assembly.classDeclarations
+			let protocols = declarationVisitor.assembly.protocolDeclarations
+			let structs = declarationVisitor.assembly.structureDeclarations
+			let variables = declarationVisitor.assembly.variableDeclarations
 			
 			print("======================================================")
 			print("  Processing \"\(file.fileName ?? "UNKNOWN FILE")\" ")

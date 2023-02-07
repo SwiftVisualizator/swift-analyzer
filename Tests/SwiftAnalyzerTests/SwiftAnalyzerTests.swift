@@ -42,13 +42,13 @@ final class SwiftAnalyzerTests: XCTestCase {
 		visitor.walk(sourceFileSyntax)
 		
 		print("")
-		print(visitor.classDeclarations.map(\.description).joined(separator: "\n"))
+		print(visitor.assembly.classDeclarations.map(\.description).joined(separator: "\n"))
 		print("")
-		print(visitor.protocolDeclarations.map(\.description).joined(separator: "\n"))
+		print(visitor.assembly.protocolDeclarations.map(\.description).joined(separator: "\n"))
 		print("")
-		print(visitor.structureDeclarations.map(\.description).joined(separator: "\n"))
+		print(visitor.assembly.structureDeclarations.map(\.description).joined(separator: "\n"))
 		print("")
-		print(visitor.variableDeclarations.map(\.description).joined(separator: "\n"))
+		print(visitor.assembly.variableDeclarations.map(\.description).joined(separator: "\n"))
 		print("")
 	}
 	
