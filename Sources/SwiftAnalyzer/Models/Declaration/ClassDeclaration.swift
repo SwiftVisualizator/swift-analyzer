@@ -10,13 +10,13 @@ import SwiftSyntax
 
 // MARK: - Model
 
-/// Struct declaration.
-public struct StructDeclaration: Declaration, Namable, Keywordable, Wrappable, Modifiable, GenericParametable {
+/// Class or actor declaration.
+public struct ClassDeclaration: Declaration, Namable, Keywordable, Wrappable, Modifiable, GenericParametable, Inheritable {
 	
 	// MARK: - Exposed properties
 	
 	public let identifier: String = UUID().uuidString
-
+	
 	public let wrappers: [Wrapper]
 	
 	public let modifiers: [Modifier]
@@ -32,13 +32,13 @@ public struct StructDeclaration: Declaration, Namable, Keywordable, Wrappable, M
 	// MARK: Init
 	
 	/// Creates an instance from SwiftSyntax model.
-	init(node: StructDeclSyntax) {
+	init(node: ClassDeclSyntax) {
 		self.wrappers = node.attributes?
 			.compactMap { $0.as(AttributeSyntax.self) }
 			.map(Wrapper.init(node:)) ?? []
 		self.modifiers = node.modifiers?
 			.map(Modifier.init(node:)) ?? []
-		self.keyword = node.structKeyword.text.trimmed
+		self.keyword = node.classOrActorKeyword.text.trimmed
 		self.name = node.identifier.text.trimmed
 		self.inheritances = node.inheritanceClause?.inheritedTypeCollection
 			.map(\.typeName.description.trimmed) ?? []
@@ -50,7 +50,7 @@ public struct StructDeclaration: Declaration, Namable, Keywordable, Wrappable, M
 
 // MARK: - CustomStringConvertible
 
-extension StructDeclaration: CustomStringConvertible {
+extension ClassDeclaration: CustomStringConvertible {
 	
 	public var description: String {
 		var result: String = ""

@@ -26,16 +26,23 @@
 import Foundation
 import SwiftAnalyzer
 
+// MARK: - Tool
+
 public final class CommandLineTool  {
 	
+	// MARK: Private properties
+	
 	private let arguments: [String]
+	
+	// MARK: Init
 	
 	public init(arguments: [String] = CommandLine.arguments) {
 		self.arguments = arguments
 	}
 	
+	// MARK: Exposed properties
+	
 	public func run() throws {
-		
 		let parser = Parser()
 		let files = try parser.parse(
 			directory: URL(string: "/Users/whutao/code/swift-analyzer")!,
@@ -46,23 +53,29 @@ public final class CommandLineTool  {
 		analyzer.consume(files: files)
 		try analyzer.analyze()
 		
-//		let finder = SourceFinder()
-//		let urls = finder.getSourceFiles(allowedExtensions: ["swift"])
-//		if urls.isEmpty {
-//			print("Not found any *.swift files :(", urls)
-//		} else {
-//			print("Found *.swift files:")
-//			urls.forEach { url in
-//				print(url)
-//			}
-//		}
-//
-//		let foundUrl = urls.first { $0.absoluteString.contains("SpecialOctoSystem.swift") }
-//		if let foundUrl, let content = try? String(contentsOf: foundUrl) {
-//			let analyzer = Analyzer()
-//			let forest = try analyzer.parse(content, filepath: "/src/test.swift")
-//			log.display(forest.first!)
-//		}
+		let classes = analyzer.declarationAssembly.classDeclarations
+		let protocols = analyzer.declarationAssembly.protocolDeclarations
+		let structs = analyzer.declarationAssembly.structureDeclarations
+		let variables = analyzer.declarationAssembly.variableDeclarations
+		
+		print("======================================================")
+		print("======================================================")
+		print("1. Found classes:")
+		print(classes.map({ "  " + $0.description }).joined(separator: "\n"))
+		print("======================================================")
+		print("======================================================")
+		print("2. Found protocols:")
+		print(protocols.map({ "  " + $0.description }).joined(separator: "\n"))
+		print("======================================================")
+		print("======================================================")
+		print("3. Found variables:")
+		print(variables.map({ "  " + $0.description }).joined(separator: "\n"))
+		print("======================================================")
+		print("======================================================")
+		print("4. Found structs:")
+		print(structs.map({ "  " + $0.description }).joined(separator: "\n"))
+		print("======================================================")
+		print("======================================================")
 	}
 	
 }

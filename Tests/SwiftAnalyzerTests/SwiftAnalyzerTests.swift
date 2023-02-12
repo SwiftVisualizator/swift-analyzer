@@ -29,27 +29,5 @@ import SwiftSyntaxParser
 @testable import SwiftAnalyzer
 
 final class SwiftAnalyzerTests: XCTestCase {
-	
-	func testParsing() throws {
-		//		let analyzer = Analyzer()
-		//		let forest = try analyzer.parse(smolSample, filepath: "/src/abobus.swift")
-		
-		let sourceFileSyntax = try SyntaxParser.parse(
-			source: smolSample
-		)
-		
-		let visitor = DeclarationVisitor()
-		visitor.walk(sourceFileSyntax)
-		
-		print("")
-		print(visitor.assembly.classDeclarations.map(\.description).joined(separator: "\n"))
-		print("")
-		print(visitor.assembly.protocolDeclarations.map(\.description).joined(separator: "\n"))
-		print("")
-		print(visitor.assembly.structureDeclarations.map(\.description).joined(separator: "\n"))
-		print("")
-		print(visitor.assembly.variableDeclarations.map(\.description).joined(separator: "\n"))
-		print("")
-	}
-	
+
 }

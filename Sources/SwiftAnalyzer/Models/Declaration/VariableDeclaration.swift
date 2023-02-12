@@ -81,11 +81,11 @@ public struct VariableDeclaration: Declaration, Namable, Keywordable, Wrappable,
 
 extension VariableDeclaration {
 	
-	public struct Accessor {
+	public struct Accessor: Equatable, Hashable {
 		
 		// MARK: Exposed types
 		
-		public enum AccessorType: String {
+		public enum AccessorType: String, Equatable, Hashable {
 			case getter = "get"
 			case setter = "set"
 		}

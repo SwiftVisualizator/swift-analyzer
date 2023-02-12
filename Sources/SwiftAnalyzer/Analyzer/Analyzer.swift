@@ -31,10 +31,15 @@ import SwiftSyntaxParser
 
 public final class Analyzer {
 	
+	// MARK: Exposed properties
+	
+	public private(set) var parsedFiles: [ParsedFile] = []
+	
+	public private(set) var declarationAssembly: DeclarationAssembly = DeclarationAssembly()
+	
 	// MARK: Private properties
 	
-	private var files: [ParsedFile] = []
-	
+	private var dependencyAnalyzer: DependencyAnalyzer?
 	
 	// MARK: Init
 	
@@ -46,15 +51,17 @@ public final class Analyzer {
 	// MARK: Exposed methods
 	
 	public func consume(file: ParsedFile) {
-		self.files.append(file)
+		self.parsedFiles.append(file)
 	}
 	
 	public func consume(files: [ParsedFile]) {
-		self.files.append(contentsOf: files)
+		self.parsedFiles.append(contentsOf: files)
 	}
 	
 	public func analyze() throws {
-		try files.forEach { file in
+		try parsedFiles.forEach { file in
+			print("Processing \"\(file.fileName ?? "UNKNOWN FILE")\" ")
+			
 			let sourceFileSyntax = try SyntaxParser.parse(
 				source: file.content
 			)
@@ -64,24 +71,17 @@ public final class Analyzer {
 			
 			let declarationVisitor = DeclarationVisitor()
 			declarationVisitor.walk(sourceFileSyntax)
-			let classes = declarationVisitor.assembly.classDeclarations
-			let protocols = declarationVisitor.assembly.protocolDeclarations
-			let structs = declarationVisitor.assembly.structureDeclarations
-			let variables = declarationVisitor.assembly.variableDeclarations
 			
-			print("======================================================")
-			print("  Processing \"\(file.fileName ?? "UNKNOWN FILE")\" ")
-			print("======================================================")
-			print("1. Found classes:")
-			print(classes.map({ "  " + $0.description }).joined(separator: "\n"))
-			print("2. Found protocols:")
-			print(protocols.map({ "  " + $0.description }).joined(separator: "\n"))
-			print("3. Found variables:")
-			print(variables.map({ "  " + $0.description }).joined(separator: "\n"))
-			print("4. Found structs:")
-			print(structs.map({ "  " + $0.description }).joined(separator: "\n"))
-			print("======================================================")
+			declarationAssembly.merge(declarationVisitor.assembly)
 		}
+		
+		dependencyAnalyzer = try DependencyAnalyzer(
+			declarations: declarationAssembly
+		)
+	}
+	
+	public func rootDeclarationDependencyMembers() -> Set<DeclarationDependencyMember>? {
+		return try? dependencyAnalyzer?.rootDeclarationDependencyMembers()
 	}
 	
 }

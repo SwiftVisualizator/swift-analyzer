@@ -13,7 +13,7 @@ import SwiftSyntax
 /// Helper structure. Wrapper or attribute with extra information about a declaration.
 ///
 /// For example, `@discardableResult`, `@Published`, `@available(*, unavailable)`.
-public struct Wrapper {
+public struct Wrapper: Equatable, Hashable {
 	
 	// MARK: Exposed properties
 	
@@ -61,7 +61,7 @@ public struct Wrapper {
 
 extension Wrapper {
 	
-	public struct Parameter {
+	public struct Parameter: Equatable, Hashable {
 		
 		// MARK: Exposed properties
 		
