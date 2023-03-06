@@ -25,6 +25,7 @@
 
 import Foundation
 import SwiftAnalyzer
+import WebServer
 
 // MARK: - Tool
 
