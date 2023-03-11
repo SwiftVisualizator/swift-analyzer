@@ -50,6 +50,14 @@ public final class Analyzer {
 	
 	// MARK: Exposed methods
 	
+	internal func consume(text: String) {
+		let virtualFile = ParsedFile(
+			fileUrl: nil,
+			content: text
+		)
+		self.parsedFiles.append(virtualFile)
+	}
+	
 	public func consume(file: ParsedFile) {
 		self.parsedFiles.append(file)
 	}

@@ -28,6 +28,8 @@ import SwiftSyntax
 import SwiftSyntaxParser
 @testable import SwiftAnalyzer
 
+// MARK: - Tests
+
 final class SwiftAnalyzerTests: XCTestCase {
 
 }
