@@ -9,10 +9,10 @@ import Foundation
 
 // MARK: - Protocol
 
-/// Declaration that contain information about generic parameters.
+/// Declaration that contains information about generic parameters.
 public protocol GenericParametable: Declaration {
 	
-	/// Ordered list of generic parameters. For example, `<A: Codable, B>`.
+	/// Ordered list of generic parameters. For example, `["A: Codable", "B"]`, `<A: Codable, B>`.
 	var genericParameters: [GenericParameter] { get }
 	
 }

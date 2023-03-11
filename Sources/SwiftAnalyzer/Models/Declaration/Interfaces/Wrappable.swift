@@ -9,7 +9,7 @@ import Foundation
 
 // MARK: - Protocol
 
-/// Declaration that contain keyword.
+/// Declaration that contains keyword.
 public protocol Wrappable: Declaration {
 
 	/// Declaration list(ordered) of wrappers.

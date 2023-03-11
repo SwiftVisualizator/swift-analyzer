@@ -10,7 +10,7 @@ import SwiftSyntax
 
 // MARK: - Model
 
-/// Generic parameter declaration. For example, `Header` and `Body: Codalbe`
+/// Generic parameter declaration. For example, `Header` and `Body: Codable`
 /// from `<Headers, Body: Codable>`.
 public struct GenericParameter: Equatable, Hashable {
 

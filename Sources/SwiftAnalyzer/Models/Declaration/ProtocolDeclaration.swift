@@ -11,7 +11,7 @@ import SwiftSyntax
 // MARK: - Model
 
 /// Protocol declaration.
-public struct ProtocolDeclaration: Declaration, Namable, Keywordable, Wrappable, Modifiable, Inheritable {
+public struct ProtocolDeclaration: Declaration, Namable, Keywordable, Wrappable, Modifiable, Inheritable, GenericRequirementable {
 	
 	// MARK: - Exposed properties
 	
@@ -27,6 +27,8 @@ public struct ProtocolDeclaration: Declaration, Namable, Keywordable, Wrappable,
 
 	public let inheritances: [String]
 	
+	public let genericRequirements: [GenericRequirement]
+	
 	// MARK: Init
 	
 	/// Creates an instance from SwiftSyntax model.
@@ -40,6 +42,8 @@ public struct ProtocolDeclaration: Declaration, Namable, Keywordable, Wrappable,
 		self.name = node.identifier.text.trimmed
 		self.inheritances = node.inheritanceClause?.inheritedTypeCollection
 			.map(\.typeName.description.trimmed) ?? []
+		self.genericRequirements = node.genericWhereClause?.requirementList
+			.compactMap(GenericRequirement.init(node:)) ?? []
 	}
 	
 }
@@ -59,6 +63,10 @@ extension ProtocolDeclaration: CustomStringConvertible {
 		if !inheritances.isEmpty {
 			result += ": "
 			result += inheritances.joined(separator: ", ")
+		}
+		if !genericRequirements.isEmpty {
+			result += "where "
+			result += genericRequirements.map(\.description).joined(separator: ", ")
 		}
 		return result
 	}

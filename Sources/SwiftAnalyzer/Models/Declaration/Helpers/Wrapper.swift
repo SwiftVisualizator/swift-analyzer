@@ -13,7 +13,7 @@ import SwiftSyntax
 /// Helper structure. Wrapper or attribute with extra information about a declaration.
 ///
 /// For example, `@discardableResult`, `@Published`, `@available(*, unavailable)`.
-public struct Wrapper: Equatable, Hashable {
+public struct Wrapper: Equatable, Hashable, Codable {
 	
 	// MARK: Exposed properties
 	
@@ -36,9 +36,10 @@ public struct Wrapper: Equatable, Hashable {
 	/// Creates an instance from SwiftSyntax model.
 	init(node: AttributeSyntax) {
 		self.name = node.attributeName.text.trimmed
-		self.parameters = node.description.split(separator: ",")
-			.map { $0.split(separator: ":", maxSplits: 1) }
-			.compactMap { components in
+		self.parameters = node.argument?.description
+			.split(separator: ",")
+			.map({ $0.split(separator: ":", maxSplits: 1) })
+			.compactMap({ components in
 				if components.count == 2, let key = components.first, let value = components.last {
 					return Parameter(
 						key: String(key).trimmed,
@@ -52,7 +53,7 @@ public struct Wrapper: Equatable, Hashable {
 				} else {
 					return nil
 				}
-			}
+			}) ?? []
 	}
 	
 }
@@ -61,9 +62,19 @@ public struct Wrapper: Equatable, Hashable {
 
 extension Wrapper {
 	
-	public struct Parameter: Equatable, Hashable {
+	public struct Parameter: Equatable, Hashable, Codable, CustomStringConvertible {
 		
 		// MARK: Exposed properties
+		
+		public var description: String {
+			var result: String = ""
+			if let key {
+				result += key
+				result += ": "
+			}
+			result += value
+			return result
+		}
 		
 		/// Optional key.
 		public let key: String?
@@ -85,13 +96,7 @@ extension Wrapper: CustomStringConvertible {
 		result += name
 		if !parameters.isEmpty {
 			result += "("
-			parameters.forEach { parameter in
-				if let key = parameter.key {
-					result += key
-					result += " : "
-				}
-				result += parameter.value
-			}
+			result += parameters.map(\.description).joined(separator: ", ")
 			result += ")"
 		}
 		return result

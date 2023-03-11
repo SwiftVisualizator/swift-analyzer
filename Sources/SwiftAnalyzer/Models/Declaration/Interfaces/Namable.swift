@@ -9,7 +9,7 @@ import Foundation
 
 // MARK: - Protocol
 
-/// Declaration that contain name.
+/// Declaration that contains name.
 public protocol Namable: Declaration {
 	
 	/// Declaration name.

@@ -9,7 +9,7 @@ import Foundation
 
 // MARK: - Protocol
 
-/// Declaration that contain keyword.
+/// Declaration that contains keyword.
 public protocol Keywordable: Declaration {
 	
 	/// Static keyword of the declaration.

@@ -19,7 +19,32 @@ final class DeclarationVisitor: SyntaxVisitor {
 	/// Found declarations.
 	private(set) var assembly: DeclarationAssembly = DeclarationAssembly()
 	
-	// MARK: Overrride
+	// MARK: Override
+	
+	override func visit(_ node: AssociatedtypeDeclSyntax) -> SyntaxVisitorContinueKind {
+		assembly.associatedTypeDeclarations.append(AssociatedTypeDeclaration(node: node))
+		return super.visit(node)
+	}
+	
+	override func visit(_ node: TypealiasDeclSyntax) -> SyntaxVisitorContinueKind {
+		assembly.typealiasDeclarations.append(TypealiasDeclaration(node: node))
+		return super.visit(node)
+	}
+	
+	override func visit(_ node: FunctionDeclSyntax) -> SyntaxVisitorContinueKind {
+		assembly.functionDeclarations.append(FunctionDeclaration(node: node))
+		return super.visit(node)
+	}
+	
+	override func visit(_ node: ExtensionDeclSyntax) -> SyntaxVisitorContinueKind {
+		assembly.extensionDeclarations.append(ExtensionDeclaration(node: node))
+		return super.visit(node)
+	}
+	
+	override func visit(_ node: ImportDeclSyntax) -> SyntaxVisitorContinueKind {
+		assembly.importDeclarations.append(ImportDeclaration(node: node))
+		return super.visit(node)
+	}
 	
 	override func visit(_ node: EnumDeclSyntax) -> SyntaxVisitorContinueKind {
 		assembly.enumDeclarations.append(EnumDeclaration(node: node))

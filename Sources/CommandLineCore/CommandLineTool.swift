@@ -59,6 +59,11 @@ public final class CommandLineTool  {
 		let protocols = analyzer.declarationAssembly.protocolDeclarations
 		let structs = analyzer.declarationAssembly.structureDeclarations
 		let variables = analyzer.declarationAssembly.variableDeclarations
+		let typealiases = analyzer.declarationAssembly.typealiasDeclarations
+		let associatedTypes = analyzer.declarationAssembly.associatedTypeDeclarations
+		let extensions = analyzer.declarationAssembly.extensionDeclarations
+		let functions = analyzer.declarationAssembly.functionDeclarations
+		let imports = analyzer.declarationAssembly.importDeclarations
 		
 		print("======================================================")
 		print("======================================================")
@@ -82,8 +87,28 @@ public final class CommandLineTool  {
 		print(enums.map({ "  " + $0.description }).joined(separator: "\n"))
 		print("======================================================")
 		print("======================================================")
+		print("6. Found typealiases:")
+		print(typealiases.map({ "  " + $0.description }).joined(separator: "\n"))
+		print("======================================================")
+		print("======================================================")
+		print("7. Found associated types:")
+		print(associatedTypes.map({ "  " + $0.description }).joined(separator: "\n"))
+		print("======================================================")
+		print("======================================================")
+		print("8. Found extensions:")
+		print(extensions.map({ "  " + $0.description }).joined(separator: "\n"))
+		print("======================================================")
+		print("======================================================")
+		print("9. Found functions:")
+		print(functions.map({ "  " + $0.description }).joined(separator: "\n"))
+		print("======================================================")
+		print("======================================================")
+		print("10. Found imports:")
+		print(imports.map({ "  " + $0.description }).joined(separator: "\n"))
+		print("======================================================")
+		print("======================================================")
 		
-		print(analyzer.rootDeclarationDependencyMembers())
+		print(analyzer.rootDeclarationDependencyMembers())		
 	}
 	
 }

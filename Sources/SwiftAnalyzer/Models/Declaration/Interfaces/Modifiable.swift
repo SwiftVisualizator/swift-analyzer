@@ -9,7 +9,7 @@ import Foundation
 
 // MARK: - Protocol
 
-/// Declaration that modifiers.
+/// Declaration that contains modifiers.
 public protocol Modifiable: Declaration {
 	
 	/// Declaration modifiers. For exmaple, `public`, `final`.

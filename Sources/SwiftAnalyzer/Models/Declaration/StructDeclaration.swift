@@ -11,9 +11,9 @@ import SwiftSyntax
 // MARK: - Model
 
 /// Struct declaration.
-public struct StructDeclaration: Declaration, Namable, Keywordable, Wrappable, Modifiable, GenericParametable, Inheritable {
+public struct StructDeclaration: Declaration, Namable, Keywordable, Wrappable, Modifiable, GenericParametable, Inheritable, GenericRequirementable {
 	
-	// MARK: - Exposed properties
+	// MARK: Exposed properties
 	
 	public let identifier: String = UUID().uuidString
 
@@ -28,6 +28,8 @@ public struct StructDeclaration: Declaration, Namable, Keywordable, Wrappable, M
 	public let inheritances: [String]
 	
 	public let genericParameters: [GenericParameter]
+	
+	public let genericRequirements: [GenericRequirement]
 	
 	// MARK: Init
 	
@@ -44,6 +46,8 @@ public struct StructDeclaration: Declaration, Namable, Keywordable, Wrappable, M
 			.map(\.typeName.description.trimmed) ?? []
 		self.genericParameters = node.genericParameterClause?.genericParameterList
 			.map(GenericParameter.init(node:)) ?? []
+		self.genericRequirements = node.genericWhereClause?.requirementList
+			.compactMap(GenericRequirement.init(node:)) ?? []
 	}
 	
 }
@@ -68,6 +72,10 @@ extension StructDeclaration: CustomStringConvertible {
 		if !inheritances.isEmpty {
 			result += ": "
 			result += inheritances.joined(separator: ", ")
+		}
+		if !genericRequirements.isEmpty {
+			result += "where "
+			result += genericRequirements.map(\.description).joined(separator: ", ")
 		}
 		return result
 	}

@@ -11,9 +11,9 @@ import SwiftSyntax
 // MARK: - Model
 
 /// Enum declaration.
-public struct EnumDeclaration: Declaration, Namable, Keywordable, Wrappable, Modifiable, GenericParametable, Inheritable {
+public struct EnumDeclaration: Declaration, Namable, Keywordable, Wrappable, Modifiable, GenericParametable, Inheritable, GenericRequirementable {
 	
-	// MARK: - Exposed properties
+	// MARK: Exposed properties
 	
 	public let identifier: String = UUID().uuidString
 	
@@ -28,6 +28,8 @@ public struct EnumDeclaration: Declaration, Namable, Keywordable, Wrappable, Mod
 	public let inheritances: [String]
 	
 	public let genericParameters: [GenericParameter]
+	
+	public let genericRequirements: [GenericRequirement]
 	
 	// MARK: Init
 	
@@ -44,6 +46,8 @@ public struct EnumDeclaration: Declaration, Namable, Keywordable, Wrappable, Mod
 			.map(\.typeName.description.trimmed) ?? []
 		self.genericParameters = node.genericParameters?.genericParameterList
 			.map(GenericParameter.init(node:)) ?? []
+		self.genericRequirements = node.genericWhereClause?.requirementList
+			.compactMap(GenericRequirement.init(node:)) ?? []
 	}
 	
 }
@@ -57,8 +61,7 @@ extension EnumDeclaration: CustomStringConvertible {
 		result += (
 			wrappers.map(\.description) +
 			modifiers.map(\.description) +
-			[keyword] +
-			[name]
+			[keyword, name]
 		).joined(separator: " ").asString
 		if !genericParameters.isEmpty {
 			result += "<"
@@ -68,6 +71,10 @@ extension EnumDeclaration: CustomStringConvertible {
 		if !inheritances.isEmpty {
 			result += ": "
 			result += inheritances.joined(separator: ", ")
+		}
+		if !genericRequirements.isEmpty {
+			result += "where "
+			result += genericRequirements.map(\.description).joined(separator: ", ")
 		}
 		return result
 	}

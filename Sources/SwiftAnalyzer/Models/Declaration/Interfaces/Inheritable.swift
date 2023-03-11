@@ -9,7 +9,7 @@ import Foundation
 
 // MARK: - Protocol
 
-/// Declaration that contain information about inheritance.
+/// Declaration that contains information about inheritance.
 public protocol Inheritable: Declaration {
 	
 	/// Ordered list of declaration inheritances.

@@ -13,7 +13,7 @@ import SwiftSyntax
 /// Variable(including top-level) declaration
 public struct VariableDeclaration: Declaration, Namable, Keywordable, Wrappable, Modifiable {
 	
-	// MARK: - Exposed properties
+	// MARK: Exposed properties
 	
 	public let identifier: String = UUID().uuidString
 	

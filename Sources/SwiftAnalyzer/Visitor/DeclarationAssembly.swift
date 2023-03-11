@@ -14,11 +14,26 @@ public final class DeclarationAssembly {
 	
 	// MARK: Exposed properties
 	
+	/// Found import declarations.
+	public internal(set) var importDeclarations: [ImportDeclaration] = []
+	
+	/// Found typealias declarations.
+	public internal(set) var typealiasDeclarations: [TypealiasDeclaration] = []
+	
+	/// Found associated type declarations.
+	public internal(set) var associatedTypeDeclarations: [AssociatedTypeDeclaration] = []
+	
 	/// Found enum declarations.
 	public internal(set) var enumDeclarations: [EnumDeclaration] = []
 	
 	/// Found class declarations.
 	public internal(set) var classDeclarations: [ClassDeclaration] = []
+	
+	/// Found function declarations.
+	public internal(set) var functionDeclarations: [FunctionDeclaration] = []
+	
+	/// Found extension declarations.
+	public internal(set) var extensionDeclarations: [ExtensionDeclaration] = []
 	
 	/// Found protocol declarations.
 	public internal(set) var protocolDeclarations: [ProtocolDeclaration] = []
@@ -31,7 +46,7 @@ public final class DeclarationAssembly {
 	
 	// MARK: Init
 	
-	init() {
+	internal init() {
 		
 	}
 	
@@ -41,9 +56,14 @@ public final class DeclarationAssembly {
 	public func merge(_ other: DeclarationAssembly) {
 		self.enumDeclarations += other.enumDeclarations
 		self.classDeclarations += other.classDeclarations
+		self.importDeclarations += other.importDeclarations
 		self.protocolDeclarations += other.protocolDeclarations
-		self.structureDeclarations += other.structureDeclarations
 		self.variableDeclarations += other.variableDeclarations
+		self.functionDeclarations += other.functionDeclarations
+		self.extensionDeclarations += other.extensionDeclarations
+		self.structureDeclarations += other.structureDeclarations
+		self.typealiasDeclarations += other.typealiasDeclarations
+		self.associatedTypeDeclarations += other.associatedTypeDeclarations
 	}
 
 }
