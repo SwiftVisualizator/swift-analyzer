@@ -68,7 +68,7 @@ public final class Analyzer {
 	
 	public func analyze() throws {
 		try parsedFiles.forEach { file in
-			print("Processing \"\(file.fileName ?? "UNKNOWN FILE")\" ")
+			// print("Processing \"\(file.fileName ?? "UNKNOWN FILE")\" ")
 			
 			let sourceFileSyntax = try SyntaxParser.parse(
 				source: file.content

@@ -57,7 +57,7 @@ public final class CommandLineTool  {
 		let enums = analyzer.declarationAssembly.enumDeclarations
 		let classes = analyzer.declarationAssembly.classDeclarations
 		let protocols = analyzer.declarationAssembly.protocolDeclarations
-		let structs = analyzer.declarationAssembly.structureDeclarations
+		let structs = analyzer.declarationAssembly.structDeclarations
 		let variables = analyzer.declarationAssembly.variableDeclarations
 		let typealiases = analyzer.declarationAssembly.typealiasDeclarations
 		let associatedTypes = analyzer.declarationAssembly.associatedTypeDeclarations

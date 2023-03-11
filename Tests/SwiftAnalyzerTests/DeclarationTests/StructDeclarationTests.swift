@@ -94,7 +94,7 @@ final class StructDeclarationTests: XCTestCase {
 			Storage: LocalStorage,
 			Key,
 			Content
-		> where Content == LocalStorage.Content, Key: Hashable {
+		>: Hashable, Codable where Content == LocalStorage.Content, Key: Hashable {
 			
 		}
 		"""#
@@ -122,6 +122,8 @@ final class StructDeclarationTests: XCTestCase {
 		XCTAssertEqual(parsedStruct.genericParameters[2].name, "Content")
 		XCTAssertEqual(parsedStruct.genericParameters[2].constraintType, nil)
 		
+		XCTAssertEqual(parsedStruct.inheritances, ["Hashable", "Codable"])
+		
 		XCTAssertEqual(parsedStruct.genericRequirements.count, 2)
 		XCTAssertEqual(parsedStruct.genericRequirements[0].leadingType, "Content")
 		XCTAssertEqual(parsedStruct.genericRequirements[0].relation, GenericRequirement.Relation.equals)
@@ -134,7 +136,7 @@ final class StructDeclarationTests: XCTestCase {
 	// MARK: - Private methods
 	
 	private func parseSingleStruct(from string: String) throws -> StructDeclaration {
-		let foundStructs = try analyze(text: string).structureDeclarations
+		let foundStructs = try analyze(text: string).structDeclarations
 		XCTAssertEqual(foundStructs.count, 1)
 		return foundStructs.first!
 	}

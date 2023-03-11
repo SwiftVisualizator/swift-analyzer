@@ -23,6 +23,8 @@ public enum DeclarationDependencyMemeberKind: Equatable, Hashable {
 	
 	case `protocol`(ProtocolDeclaration)
 	
+	case `extension`(ExtensionDeclaration)
+	
 	// MARK: Exposed properties
 	
 	/// Wrapped declaration name.
@@ -38,6 +40,8 @@ public enum DeclarationDependencyMemeberKind: Equatable, Hashable {
 			return declaration.name
 		case let .protocol(declaration):
 			return declaration.name
+		case let .extension(declaration):
+			return "Extension of \(declaration.extendedType)"
 		}
 	}
 	
@@ -54,12 +58,14 @@ public enum DeclarationDependencyMemeberKind: Equatable, Hashable {
 			return declaration.inheritances
 		case let .protocol(declaration):
 			return declaration.inheritances
+		case let .extension(declaration):
+			return declaration.inheritances
 		}
 	}
 	
 	// MARK: Exposed methods
 	
-	public func canHaveParent(_ parent: DeclarationDependencyMemeberKind) -> Bool {
+	func canHaveParent(_ parent: DeclarationDependencyMemeberKind) -> Bool {
 		switch (self, parent) {
 		case (_, .unknown):
 			return true
@@ -72,7 +78,7 @@ public enum DeclarationDependencyMemeberKind: Equatable, Hashable {
 		}
 	}
 	
-	public func canHaveChild(_ child: DeclarationDependencyMemeberKind) -> Bool {
+	func canHaveChild(_ child: DeclarationDependencyMemeberKind) -> Bool {
 		return child.canHaveParent(self)
 	}
 	

@@ -39,7 +39,7 @@ public final class DeclarationAssembly {
 	public internal(set) var protocolDeclarations: [ProtocolDeclaration] = []
 	
 	/// Found structure declarations.
-	public internal(set) var structureDeclarations: [StructDeclaration] = []
+	public internal(set) var structDeclarations: [StructDeclaration] = []
 	
 	/// Found variable declarations.
 	public internal(set) var variableDeclarations: [VariableDeclaration] = []
@@ -61,7 +61,7 @@ public final class DeclarationAssembly {
 		self.variableDeclarations += other.variableDeclarations
 		self.functionDeclarations += other.functionDeclarations
 		self.extensionDeclarations += other.extensionDeclarations
-		self.structureDeclarations += other.structureDeclarations
+		self.structDeclarations += other.structDeclarations
 		self.typealiasDeclarations += other.typealiasDeclarations
 		self.associatedTypeDeclarations += other.associatedTypeDeclarations
 	}

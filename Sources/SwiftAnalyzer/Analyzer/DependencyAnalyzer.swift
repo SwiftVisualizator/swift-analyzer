@@ -26,7 +26,7 @@ final class DependencyAnalyzer {
 			.map(DeclarationDependencyMemeberKind.protocol)
 		dependencyMemberKinds += declarations.classDeclarations
 			.map(DeclarationDependencyMemeberKind.class)
-		dependencyMemberKinds += declarations.structureDeclarations
+		dependencyMemberKinds += declarations.structDeclarations
 			.map(DeclarationDependencyMemeberKind.struct)
 		try directedGraph.insert(contents: dependencyMemberKinds)
 		//

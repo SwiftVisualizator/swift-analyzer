@@ -62,7 +62,7 @@ final class DeclarationVisitor: SyntaxVisitor {
 	}
 	
 	override func visit(_ node: StructDeclSyntax) -> SyntaxVisitorContinueKind {
-		assembly.structureDeclarations.append(StructDeclaration(node: node))
+		assembly.structDeclarations.append(StructDeclaration(node: node))
 		return super.visit(node)
 	}
 	
