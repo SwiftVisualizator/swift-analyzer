@@ -1,0 +1,11 @@
+var nodesData = [
+    {% for node in nodes %}
+    { "name": "{{ node.name }}" }{{ "," if not forloop.last else "" }}
+    {% endfor %}
+];
+
+var linksData = [
+    {% for link in links %}
+    {"source": "{{ link.source }}", "target": "{{ link.target }}"}{{ "," if not forloop.last else "" }}
+    {% endfor %}
+];
