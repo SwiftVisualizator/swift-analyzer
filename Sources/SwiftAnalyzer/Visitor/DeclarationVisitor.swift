@@ -21,6 +21,11 @@ final class DeclarationVisitor: SyntaxVisitor {
 	
 	// MARK: Overrride
 	
+	override func visit(_ node: EnumDeclSyntax) -> SyntaxVisitorContinueKind {
+		assembly.enumDeclarations.append(EnumDeclaration(node: node))
+		return super.visit(node)
+	}
+	
 	override func visit(_ node: ClassDeclSyntax) -> SyntaxVisitorContinueKind {
 		assembly.classDeclarations.append(ClassDeclaration(node: node))
 		return super.visit(node)

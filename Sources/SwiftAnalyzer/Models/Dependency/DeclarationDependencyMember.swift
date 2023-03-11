@@ -21,7 +21,7 @@ public struct DeclarationDependencyMember: Hashable {
 		return kind.declarationName
 	}
 	
-	/// Child declaration.
+	/// Child declarations.
 	///
 	/// For example, in `class ProfileResponse: Decodable`,
 	/// the class declaration `ProfileResponse` is a child of `Decodable` protocol
@@ -45,6 +45,10 @@ public struct DeclarationDependencyMember: Hashable {
 		self.kind = .protocol(declaration)
 	}
 	
+	init(enum declaration: EnumDeclaration) {
+		self.kind = .enum(declaration)
+	}
+	
 	// MARK: Exposed methods
 	
 	func canHaveChild(_ other: DeclarationDependencyMember) -> Bool {
@@ -58,6 +62,16 @@ public struct DeclarationDependencyMember: Hashable {
 			throw DependencyError.cannotHaveChild(member: self, child: other)
 		}
 		childs.append(other)
+	}
+	
+}
+
+// MARK: - CustomStringConvertible
+
+extension DeclarationDependencyMember: CustomStringConvertible {
+	
+	public var description: String {
+		return name
 	}
 	
 }

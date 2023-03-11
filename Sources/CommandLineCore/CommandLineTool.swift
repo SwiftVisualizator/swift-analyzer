@@ -45,7 +45,7 @@ public final class CommandLineTool  {
 	public func run() throws {
 		let parser = Parser()
 		let files = try parser.parse(
-			directory: URL(string: "/Users/whutao/code/swift-analyzer")!,
+			directory: URL(string: "/Users/whutao/code/breaking-news-ios")!,
 			allowedExtensions: ["swift"]
 		)
 		
@@ -53,6 +53,7 @@ public final class CommandLineTool  {
 		analyzer.consume(files: files)
 		try analyzer.analyze()
 		
+		let enums = analyzer.declarationAssembly.enumDeclarations
 		let classes = analyzer.declarationAssembly.classDeclarations
 		let protocols = analyzer.declarationAssembly.protocolDeclarations
 		let structs = analyzer.declarationAssembly.structureDeclarations
@@ -76,6 +77,12 @@ public final class CommandLineTool  {
 		print(structs.map({ "  " + $0.description }).joined(separator: "\n"))
 		print("======================================================")
 		print("======================================================")
+		print("5. Found enums:")
+		print(enums.map({ "  " + $0.description }).joined(separator: "\n"))
+		print("======================================================")
+		print("======================================================")
+		
+		print(analyzer.rootDeclarationDependencyMembers())
 	}
 	
 }

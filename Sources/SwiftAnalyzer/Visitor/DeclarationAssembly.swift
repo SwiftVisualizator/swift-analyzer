@@ -14,6 +14,9 @@ public final class DeclarationAssembly {
 	
 	// MARK: Exposed properties
 	
+	/// Found enum declarations.
+	public internal(set) var enumDeclarations: [EnumDeclaration] = []
+	
 	/// Found class declarations.
 	public internal(set) var classDeclarations: [ClassDeclaration] = []
 	
@@ -36,6 +39,7 @@ public final class DeclarationAssembly {
 	
 	/// Adds(in-place) content of other assembly to this one.
 	public func merge(_ other: DeclarationAssembly) {
+		self.enumDeclarations += other.enumDeclarations
 		self.classDeclarations += other.classDeclarations
 		self.protocolDeclarations += other.protocolDeclarations
 		self.structureDeclarations += other.structureDeclarations

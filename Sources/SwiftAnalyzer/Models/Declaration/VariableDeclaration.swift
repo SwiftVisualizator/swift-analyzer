@@ -124,6 +124,7 @@ extension VariableDeclaration {
 extension VariableDeclaration: CustomStringConvertible {
 	
 	public var description: String {
+		let initialValue: String? = initialValue?.split(separator: "\n").map(String.init).first
 		if let type, let initialValue {
 			return "\(keyword) \(name): \(type) = \(initialValue)"
 		} else if let type {
