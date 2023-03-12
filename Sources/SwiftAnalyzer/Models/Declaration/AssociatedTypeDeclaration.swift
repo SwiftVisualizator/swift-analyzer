@@ -15,8 +15,6 @@ public struct AssociatedTypeDeclaration: Declaration, Wrappable, Modifiable, Key
 	
 	// MARK: Exposed properties
 	
-	public let identifier: String = UUID().uuidString
-	
 	public let wrappers: [Wrapper]
 	
 	public let modifiers: [Modifier]

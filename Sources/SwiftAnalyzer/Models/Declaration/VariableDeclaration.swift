@@ -15,8 +15,6 @@ public struct VariableDeclaration: Declaration, Namable, Keywordable, Wrappable,
 	
 	// MARK: Exposed properties
 	
-	public let identifier: String = UUID().uuidString
-	
 	public let wrappers: [Wrapper]
 	
 	public let modifiers: [Modifier]
@@ -81,11 +79,11 @@ public struct VariableDeclaration: Declaration, Namable, Keywordable, Wrappable,
 
 extension VariableDeclaration {
 	
-	public struct Accessor: Equatable, Hashable {
+	public struct Accessor: Equatable, Hashable, Codable {
 		
 		// MARK: Exposed types
 		
-		public enum AccessorType: String, Equatable, Hashable {
+		public enum AccessorType: String, Equatable, Hashable, Codable {
 			case getter = "get"
 			case setter = "set"
 		}

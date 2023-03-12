@@ -11,7 +11,7 @@ import SwiftSyntax
 // MARK: - Visitor
 
 /// SwiftSyntax visitor subclass that stores visited node models when visiting them.
-/// It stores declarations like classes, protocols, extensions etc
+/// It stores declarations like classes, protocols, extensions etc.
 final class DeclarationVisitor: SyntaxVisitor {
 	
 	// MARK: Exposed properties

@@ -15,8 +15,6 @@ public struct EnumDeclaration: Declaration, Namable, Keywordable, Wrappable, Mod
 	
 	// MARK: Exposed properties
 	
-	public let identifier: String = UUID().uuidString
-	
 	public let wrappers: [Wrapper]
 	
 	public let modifiers: [Modifier]

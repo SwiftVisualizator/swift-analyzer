@@ -15,8 +15,6 @@ public struct FunctionDeclaration: Declaration, Wrappable, Modifiable, Keywordab
 	
 	// MARK: Exposed properties
 	
-	public let identifier: String = UUID().uuidString
-	
 	public let wrappers: [Wrapper]
 	
 	public let modifiers: [Modifier]

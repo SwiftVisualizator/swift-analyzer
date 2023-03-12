@@ -10,9 +10,6 @@ import Foundation
 // MARK: - Protocol
 
 /// Declaration type.
-public protocol Declaration: Equatable, Hashable {
-	
-	/// Readonly randomly-generated identifier.
-	var identifier: String { get }
-	
+public protocol Declaration: Equatable, Hashable, Codable {
+
 }

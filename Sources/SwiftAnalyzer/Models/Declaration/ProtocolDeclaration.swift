@@ -15,8 +15,6 @@ public struct ProtocolDeclaration: Declaration, Namable, Keywordable, Wrappable,
 	
 	// MARK: - Exposed properties
 	
-	public let identifier: String = UUID().uuidString
-	
 	public let wrappers: [Wrapper]
 	
 	public let modifiers: [Modifier]

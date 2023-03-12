@@ -14,8 +14,6 @@ public struct TypealiasDeclaration: Declaration, Wrappable, Keywordable, Namable
 	
 	// MARK: Exposed properties
 	
-	public let identifier: String = UUID().uuidString
-	
 	public let wrappers: [Wrapper]
 	
 	public let modifiers: [Modifier]
