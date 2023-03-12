@@ -25,7 +25,7 @@
 
 import Foundation
 import SwiftAnalyzer
-import WebServer
+import SwiftVisualizer
 
 // MARK: - Tool
 
@@ -46,7 +46,7 @@ public final class CommandLineTool  {
 	public func run() throws {
 		let parser = Parser()
 		let files = try parser.parse(
-			directory: URL(string: "/Users/whutao/code/breaking-news-ios")!,
+			directory: URL(string: "./")!,
 			allowedExtensions: ["swift"]
 		)
 		
@@ -108,7 +108,22 @@ public final class CommandLineTool  {
 		print("======================================================")
 		print("======================================================")
 		
-		print(analyzer.rootDeclarationDependencyMembers())		
+		print(analyzer.rootDeclarationDependencyMembers())
+        
+        let generator = ContentGenerator()
+        generator.dataSource = analyzer
+        generator.generate()
 	}
-	
+}
+
+extension Analyzer: ContentDataSource {
+    public func contentNodes() -> [[String: Any]] {
+        declarationAssembly.classDeclarations.map {
+            ["name": $0.name]
+        }
+    }
+    
+    public func contentEdges() -> [[String : Any]] {
+        []
+    }
 }

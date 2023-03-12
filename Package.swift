@@ -16,9 +16,7 @@ let package = Package(
         .package(
             url: "https://github.com/apple/swift-syntax",
             branch: "0.50700.1"
-        ),
-        .package(url: "https://github.com/Kitura/Kitura", from: "2.8.0"),
-        .package(url: "https://github.com/Kitura/Kitura-StencilTemplateEngine.git", from: "2.0.0")
+        )
     ],
     targets: [
         .executableTarget(
@@ -29,14 +27,13 @@ let package = Package(
             name: "CommandLineCore",
             dependencies: [
                 "SwiftAnalyzer",
-                "WebServer"
+                "SwiftVisualizer"
             ]
         ),
         .target(
-            name: "WebServer",
-            dependencies: [
-                .product(name: "Kitura", package: "Kitura"),
-                .product(name: "KituraStencil", package: "Kitura-StencilTemplateEngine")
+            name: "SwiftVisualizer",
+            resources: [
+                .process("public")
             ]
         ),
         .target(
