@@ -35,8 +35,52 @@ if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').match
 const backgroundColor = isDarkTheme ? "#140F2D" : "#FFFFFF"
 
 // Circle configuration
-const defaultCircleColor = isDarkTheme ? "#2374AB" : "#3DBCD1"
-const selectedCircleColor = isDarkTheme ? "#67AFE0" : "#2BA1B6"
+const nodeColors = {
+    class: {
+        default: {
+            dark: "#2374AB",
+            light: "#3DBCD1"
+        },
+        selected: {
+            dark: "#67AFE0",
+            light: "#2BA1B6"
+        }
+    },
+    struct: {
+        default: {
+            dark: "#FFA726",
+            light: "#FFCC80"
+        },
+        selected: {
+            dark: "#FFC107",
+            light: "#FFEB3B"
+        }
+    },
+    enum: {
+        default: {
+            dark: "#D32F2F",
+            light: "#EF5350"
+        },
+        selected: {
+            dark: "#F44336",
+            light: "#FF8A80"
+        }
+    }
+};
+
+function getNodeColor(nodeType, isSelected) {
+    if (nodeColors[nodeType]) {
+        if (isSelected) {
+          return isDarkTheme ? nodeColors[nodeType].selected.dark : nodeColors[nodeType].selected.light;
+        } else {
+          return isDarkTheme ? nodeColors[nodeType].default.dark : nodeColors[nodeType].default.light;
+        }
+      } else {
+        // Return default color if the node type is not defined in the configuration
+        return isDarkTheme ? "#999" : "#ccc";
+      }
+}
+
 const defaultCircleRadius = 12
 const selectedCircleRadius = 16
 const defaultCircleDistance = defaultCircleRadius * 20
@@ -55,6 +99,17 @@ var selectedNodeIndex = null
 function isSelected(node) {
     return selectedNodeIndex != null && selectedNodeIndex == node.index;
 }
+
+// Preprocess data
+
+// Create a Set containing the names of all nodes
+const nodesData = rawNodesData;
+const nodeNamesSet = new Set(nodesData.map(node => node.name));
+
+// Filter out links that don't have a corresponding source or target in the nodes array
+const linksData = rawLinksData.filter(link => (
+  nodeNamesSet.has(link.source) && nodeNamesSet.has(link.target)
+));
 
 // Setup visual elements
 
@@ -104,7 +159,7 @@ var nodes = d3.select("#nodes")
     .enter()
     .append('circle')
     .attr('r', defaultCircleRadius)
-    .attr('fill', defaultCircleColor)
+    .attr('fill', (node) => getNodeColor(node.type, false))
 
 var links = d3.select("#links")
     .selectAll("line")
@@ -192,7 +247,7 @@ function selectNode(event) {
       .duration(150)
       .ease(d3.easeLinear)
       .attr('r', node => isSelected(node) ? selectedCircleRadius : defaultCircleRadius)
-      .attr('fill', node => isSelected(node) ? selectedCircleColor : defaultCircleColor);
+      .attr('fill', node => getNodeColor(node.type, isSelected(node)));
   
     labels
       .transition()

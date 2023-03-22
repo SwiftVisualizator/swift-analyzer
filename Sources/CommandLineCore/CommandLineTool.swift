@@ -118,12 +118,30 @@ public final class CommandLineTool  {
 
 extension Analyzer: ContentDataSource {
     public func contentNodes() -> [[String: Any]] {
-        declarationAssembly.classDeclarations.map {
-            ["name": $0.name]
+        let elements: [any Namable & Keywordable] =
+            declarationAssembly.classDeclarations +
+            declarationAssembly.structDeclarations +
+            declarationAssembly.enumDeclarations +
+            declarationAssembly.protocolDeclarations
+        let roots = self.rootDeclarationDependencyMembers() ?? []
+        
+        return elements.map {
+            ["name": $0.name, "type": $0.keyword]
+        } + roots.map {
+            ["name": $0.name, "type": "root"]
         }
     }
     
     public func contentEdges() -> [[String : Any]] {
-        []
+        let elements: [any Namable & Inheritable] =
+            declarationAssembly.classDeclarations +
+            declarationAssembly.structDeclarations +
+            declarationAssembly.enumDeclarations +
+            declarationAssembly.protocolDeclarations
+        return elements.flatMap { element in
+            element.inheritances.map {
+                ["source": element.name, "target": $0]
+            }
+        }
     }
 }
