@@ -37,8 +37,8 @@ const backgroundColor = isDarkTheme ? "#140F2D" : "#FFFFFF"
 // Circle configuration
 const defaultCircleColor = isDarkTheme ? "#2374AB" : "#3DBCD1"
 const selectedCircleColor = isDarkTheme ? "#67AFE0" : "#2BA1B6"
-const defaultCircleRadius = 15
-const selectedCircleRadius = 20
+const defaultCircleRadius = 12
+const selectedCircleRadius = 16
 const defaultCircleDistance = defaultCircleRadius * 20
 
 // Link configuration
@@ -52,6 +52,10 @@ const selectedLabelOffset = selectedCircleRadius + 6
 // Data configuration
 var selectedNodeIndex = null
 
+function isSelected(node) {
+    return selectedNodeIndex != null && selectedNodeIndex == node.index;
+}
+
 // Setup visual elements
 
 d3.select("body")
@@ -60,6 +64,39 @@ d3.select("body")
 const svg = d3.select("svg")
     .attr("width", width)
     .attr("height", height);
+
+const markerWidth = 10;
+const markerHeight = 10;
+const refX = markerWidth / 2;
+
+svg.append("defs")
+  .selectAll("marker")
+  .data(["arrow"])
+  .enter()
+  .append("marker")
+  .attr("id", d => d)
+  .attr("viewBox", `0 -${markerHeight/2} ${markerWidth} ${markerHeight}`)
+  .attr("refX", refX)
+  .attr("refY", 0)
+  .attr("markerWidth", markerWidth)
+  .attr("markerHeight", markerHeight)
+  .attr("orient", "auto")
+  .append("path")
+  .attr("d", `M0,-${markerHeight/2}L${markerWidth},0L0,${markerHeight/2}`)
+  .attr("fill", defaultLinkColor);
+
+d3.select("defs")
+  .append("marker")
+  .attr("id", "arrow-selected")
+  .attr("viewBox", `0 -${markerHeight/2} ${markerWidth} ${markerHeight}`)
+  .attr("refX", refX)
+  .attr("refY", 0)
+  .attr("markerWidth", markerWidth)
+  .attr("markerHeight", markerHeight)
+  .attr("orient", "auto")
+  .append("path")
+  .attr("d", `M0,-${markerHeight/2}L${markerWidth},0L0,${markerHeight/2}`)
+  .attr("fill", selectedLinkColor);
 
 var nodes = d3.select("#nodes")
     .selectAll("circle")
@@ -76,6 +113,7 @@ var links = d3.select("#links")
     .append("line")
     .attr('stroke-width', 1)
     .attr('stroke', defaultLinkColor)
+    .attr("marker-end", "url(#arrow)");
 
 var labels = d3.select("#labels")
     .selectAll('text')
@@ -88,13 +126,20 @@ var labels = d3.select("#labels")
 
 const simulation = d3.forceSimulation()
     .nodes(nodesData)
+    .force("collision_force", d3.forceCollide(defaultCircleRadius + 1))
     .force("center_force", d3.forceCenter(width / 2, height / 2))
-    .force("charge_force", d3.forceManyBody().strength(-40))
-    .force("links", d3.forceLink(linksData).id(datum => datum.name).distance(defaultCircleDistance))
+    .force("charge_force", d3.forceManyBody().strength(-100).distanceMin(100).distanceMax(300))
+    .force("links", d3.forceLink(linksData).id(datum => datum.name).distance(defaultCircleDistance).strength(0.8))
     .on("tick", () => {
         nodes
-            .attr("cx", datum => datum.x)
-            .attr("cy", datum => datum.y);
+            .attr("cx", datum => {
+                constrainNodePosition(datum, defaultCircleRadius);
+                return datum.x;
+            })
+            .attr("cy", datum => {
+                constrainNodePosition(datum, defaultCircleRadius);
+                return datum.y;
+            });
 
         labels
             .attr("x", datum => datum.x)
@@ -103,70 +148,92 @@ const simulation = d3.forceSimulation()
         links
             .attr("x1", datum => datum.source.x)
             .attr("y1", datum => datum.source.y)
-            .attr("x2", datum => datum.target.x)
-            .attr("y2", datum => datum.target.y);
+            .attr("x2", datum => {
+                const radius = isSelected(datum.target) ? selectedCircleRadius : defaultCircleRadius;
+                const { x } = getLineEndCoordinates(datum.source, datum.target, radius + refX);
+                return x;
+            })
+            .attr("y2", datum => {
+                const radius = isSelected(datum.target) ? selectedCircleRadius : defaultCircleRadius;
+                const { y } = getLineEndCoordinates(datum.source, datum.target, radius + refX);
+                return y;
+            });
     });
 
 const dragDrop = d3.drag()
     .on('start', event => {
-        if (!event.active) {
-            simulation.alphaTarget(0.3).restart()
-        }
-
-        event.subject.x = event.x
-        event.subject.y = event.y
+        if (!event.active) simulation.alphaTarget(0.3).restart();
+        event.subject.fx = event.subject.x;
+        event.subject.fy = event.subject.y;
     })
     .on('drag', event => {
-        event.subject.x = event.x
-        event.subject.y = event.y
+        event.subject.fx = event.x;
+        event.subject.fy = event.y;
     })
     .on('end', event => {
-        event.x = null
-        event.y = null
+        if (!event.active) simulation.alphaTarget(0);
+        event.subject.fx = null;
+        event.subject.fy = null;
     })
 
 nodes.call(dragDrop)
 labels.call(dragDrop)
 
 function selectNode(event) {
-    const selectedNode = event.target.__data__
-    
-    if (selectedNodeIndex == selectedNode.index) {
-        selectedNodeIndex = null
-    } else {
-        selectedNodeIndex = selectedNode.index
-    }
+    const selectedNode = event.target.__data__;
+    selectedNodeIndex = (selectedNodeIndex == selectedNode.index) ? null : selectedNode.index;
 
-    function isSelected(node) {
-        return selectedNodeIndex != null && selectedNodeIndex == node.index
-    }
-
-    let adjacentLinkIndices = linksData
-        .filter(link => (link.source.index == selectedNodeIndex || link.target.index == selectedNodeIndex))
-        .map(link => link.index );
-
+    const adjacentLinkIndices = linksData
+      .filter(link => (link.source.index == selectedNodeIndex || link.target.index == selectedNodeIndex))
+      .map(link => link.index);
+  
     nodes
-        .transition()
-        .duration(150)
-        .ease(d3.easeLinear)
-        .attr('r', node => isSelected(node) ? selectedCircleRadius : defaultCircleRadius)
-        .attr('fill', node => isSelected(node) ? selectedCircleColor : defaultCircleColor);
-
+      .transition()
+      .duration(150)
+      .ease(d3.easeLinear)
+      .attr('r', node => isSelected(node) ? selectedCircleRadius : defaultCircleRadius)
+      .attr('fill', node => isSelected(node) ? selectedCircleColor : defaultCircleColor);
+  
     labels
-        .transition()
-        .duration(150)
-        .ease(d3.easeLinear)
-        .attr('dx', node => isSelected(node) ? selectedLabelOffset : defaultLabelOffset)
-
-
+      .transition()
+      .duration(150)
+      .ease(d3.easeLinear)
+      .attr('dx', node => isSelected(node) ? selectedLabelOffset : defaultLabelOffset);
+  
     links
-        .transition()
-        .duration(150)
-        .ease(d3.easeLinear)
-        .attr('stroke', link => {
-            return adjacentLinkIndices.includes(link.index) ? selectedLinkColor : defaultLinkColor
-        })
-}
+      .transition()
+      .duration(150)
+      .ease(d3.easeLinear)
+      .attr('marker-end', link => adjacentLinkIndices.includes(link.index) ? 'url(#arrow-selected)' : 'url(#arrow)')
+      .attr('x2', datum => {
+        const radius = isSelected(datum.target) ? selectedCircleRadius : defaultCircleRadius;
+        const { x } = getLineEndCoordinates(datum.source, datum.target, radius + refX);
+        return x;
+      })
+      .attr('y2', datum => {
+        const radius = isSelected(datum.target) ? selectedCircleRadius : defaultCircleRadius;
+        const { y } = getLineEndCoordinates(datum.source, datum.target, radius + refX);
+        return y;
+      })
+      .attr('stroke', link => adjacentLinkIndices.includes(link.index) ? selectedLinkColor : defaultLinkColor);
+  }
 
 nodes.on('click', selectNode)
 labels.on('click', selectNode)
+
+// Helpers
+
+function constrainNodePosition(node, radius) {
+    node.x = Math.max(radius, Math.min(width - radius, node.x));
+    node.y = Math.max(radius, Math.min(height - radius, node.y));
+}
+  
+
+function getLineEndCoordinates(source, target, radius) {
+    const dx = target.x - source.x;
+    const dy = target.y - source.y;
+    const angle = Math.atan2(dy, dx);
+    const x = target.x - Math.cos(angle) * radius;
+    const y = target.y - Math.sin(angle) * radius;
+    return { x, y };
+}
