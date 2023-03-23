@@ -65,10 +65,30 @@ const nodeColors = {
             dark: "#F44336",
             light: "#FF8A80"
         }
+    },
+    protocol: {
+      default: {
+          dark: "#6A1B9A",
+          light: "#9C27B0"
+      },
+      selected: {
+          dark: "#BA68C8",
+          light: "#CE93D8"
+      }
+    },
+    root: {
+        default: {
+            dark: "#388E3C",
+            light: "#66BB6A"
+        },
+        selected: {
+            dark: "#4CAF50",
+            light: "#81C784"
+        }
     }
 };
 
-function getNodeColor(nodeType, isSelected) {
+function getNodeColor(nodeType, isSelected = false) {
     if (nodeColors[nodeType]) {
         if (isSelected) {
           return isDarkTheme ? nodeColors[nodeType].selected.dark : nodeColors[nodeType].selected.light;
@@ -86,8 +106,9 @@ const selectedCircleRadius = 16
 const defaultCircleDistance = defaultCircleRadius * 20
 
 // Link configuration
-const defaultLinkColor = isDarkTheme ? "#BFCDE0" : "#E5E5E5"
-const selectedLinkColor = isDarkTheme ? "#EA526F" : "#3DBCD1"
+const defaultLinkColor = isDarkTheme ? "#9FA8DA" : "#B0BEC5";
+const selectedLinkColor = isDarkTheme ? "#EF5350" : "#2196F3";
+
 
 // Label configuration
 const defaultLabelOffset = defaultCircleRadius + 4
@@ -103,13 +124,14 @@ function isSelected(node) {
 // Preprocess data
 
 // Create a Set containing the names of all nodes
-const nodesData = rawNodesData;
-const nodeNamesSet = new Set(nodesData.map(node => node.name));
+const originalNodesData = rawNodesData;
+const nodeNamesSet = new Set(originalNodesData.map(node => node.name));
 
 // Filter out links that don't have a corresponding source or target in the nodes array
-const linksData = rawLinksData.filter(link => (
+const originalLinksData = rawLinksData.filter(link => (
   nodeNamesSet.has(link.source) && nodeNamesSet.has(link.target)
 ));
+
 
 // Setup visual elements
 
@@ -153,67 +175,15 @@ d3.select("defs")
   .attr("d", `M0,-${markerHeight/2}L${markerWidth},0L0,${markerHeight/2}`)
   .attr("fill", selectedLinkColor);
 
-var nodes = d3.select("#nodes")
-    .selectAll("circle")
-    .data(nodesData)
-    .enter()
-    .append('circle')
-    .attr('r', defaultCircleRadius)
-    .attr('fill', (node) => getNodeColor(node.type, false))
-
-var links = d3.select("#links")
-    .selectAll("line")
-    .data(linksData)
-    .enter()
-    .append("line")
-    .attr('stroke-width', 1)
-    .attr('stroke', defaultLinkColor)
-    .attr("marker-end", "url(#arrow)");
-
-var labels = d3.select("#labels")
-    .selectAll('text')
-    .data(nodesData)
-    .enter()
-    .append('text')
-    .text(node => node.name)
-    .attr('font-size', 15)
-    .attr('dx', defaultLabelOffset)
+var nodes = null
+var links = null
+var labels = null
 
 const simulation = d3.forceSimulation()
-    .nodes(nodesData)
-    .force("collision_force", d3.forceCollide(defaultCircleRadius + 1))
-    .force("center_force", d3.forceCenter(width / 2, height / 2))
-    .force("charge_force", d3.forceManyBody().strength(-100).distanceMin(100).distanceMax(300))
-    .force("links", d3.forceLink(linksData).id(datum => datum.name).distance(defaultCircleDistance).strength(0.8))
-    .on("tick", () => {
-        nodes
-            .attr("cx", datum => {
-                constrainNodePosition(datum, defaultCircleRadius);
-                return datum.x;
-            })
-            .attr("cy", datum => {
-                constrainNodePosition(datum, defaultCircleRadius);
-                return datum.y;
-            });
-
-        labels
-            .attr("x", datum => datum.x)
-            .attr("y", datum => datum.y);
-        
-        links
-            .attr("x1", datum => datum.source.x)
-            .attr("y1", datum => datum.source.y)
-            .attr("x2", datum => {
-                const radius = isSelected(datum.target) ? selectedCircleRadius : defaultCircleRadius;
-                const { x } = getLineEndCoordinates(datum.source, datum.target, radius + refX);
-                return x;
-            })
-            .attr("y2", datum => {
-                const radius = isSelected(datum.target) ? selectedCircleRadius : defaultCircleRadius;
-                const { y } = getLineEndCoordinates(datum.source, datum.target, radius + refX);
-                return y;
-            });
-    });
+  .force("collision_force", d3.forceCollide().radius(node => getCollisionRadius(node)))
+  .force("center_force", d3.forceCenter(width / 2, height / 2))
+  .force("charge_force", d3.forceManyBody().strength(-150).distanceMin(50).distanceMax(200))
+  .force("radial_force", d3.forceRadial(200, width / 2, height / 2))
 
 const dragDrop = d3.drag()
     .on('start', event => {
@@ -231,52 +201,122 @@ const dragDrop = d3.drag()
         event.subject.fy = null;
     })
 
-nodes.call(dragDrop)
-labels.call(dragDrop)
+function applyFilter(filterFunction = node => true) {
+  const nodesData = structuredClone(originalNodesData)
+  const linksData = structuredClone(originalLinksData)
 
-function selectNode(event) {
-    const selectedNode = event.target.__data__;
-    selectedNodeIndex = (selectedNodeIndex == selectedNode.index) ? null : selectedNode.index;
+  const filteredNodesData = nodesData.filter(filterFunction);
+  const filteredNodeNames = new Set(filteredNodesData.map(node => node.name));
 
-    const adjacentLinkIndices = linksData
-      .filter(link => (link.source.index == selectedNodeIndex || link.target.index == selectedNodeIndex))
-      .map(link => link.index);
-  
-    nodes
-      .transition()
-      .duration(150)
-      .ease(d3.easeLinear)
-      .attr('r', node => isSelected(node) ? selectedCircleRadius : defaultCircleRadius)
-      .attr('fill', node => getNodeColor(node.type, isSelected(node)));
-  
-    labels
-      .transition()
-      .duration(150)
-      .ease(d3.easeLinear)
-      .attr('dx', node => isSelected(node) ? selectedLabelOffset : defaultLabelOffset);
-  
-    links
-      .transition()
-      .duration(150)
-      .ease(d3.easeLinear)
-      .attr('marker-end', link => adjacentLinkIndices.includes(link.index) ? 'url(#arrow-selected)' : 'url(#arrow)')
-      .attr('x2', datum => {
-        const radius = isSelected(datum.target) ? selectedCircleRadius : defaultCircleRadius;
-        const { x } = getLineEndCoordinates(datum.source, datum.target, radius + refX);
-        return x;
-      })
-      .attr('y2', datum => {
-        const radius = isSelected(datum.target) ? selectedCircleRadius : defaultCircleRadius;
-        const { y } = getLineEndCoordinates(datum.source, datum.target, radius + refX);
-        return y;
-      })
-      .attr('stroke', link => adjacentLinkIndices.includes(link.index) ? selectedLinkColor : defaultLinkColor);
-  }
+  const filteredLinksData = linksData.filter(link => 
+    filteredNodeNames.has(link.source) && filteredNodeNames.has(link.target)
+  );
 
-nodes.on('click', selectNode)
-labels.on('click', selectNode)
+  nodes = d3.select("#nodes")
+    .selectAll("circle")
+    .data(filteredNodesData)
+    .join(
+      enter => enter.append('circle')
+        .attr('r', defaultCircleRadius)
+        .attr('fill', (node) => getNodeColor(node.type)),
+      update => update,
+      exit => exit.remove()
+    );
+
+  links = d3.select("#links")
+      .selectAll("line")
+      .data(filteredLinksData)
+      .join(
+        enter => enter.append("line")
+          .attr('stroke-width', 1)
+          .attr('stroke', defaultLinkColor)
+          .attr("marker-end", "url(#arrow)"),
+        update => update,
+        exit => exit.remove()
+      );
+
+  labels = d3.select("#labels")
+    .selectAll('text')
+    .data(filteredNodesData)
+    .join(
+      enter => enter.append('text')
+        .text(node => node.name)
+        .attr('font-size', 15)
+        .attr('dx', defaultLabelOffset),
+      update => update,
+      exit => exit.remove()
+    );
+  
+  simulation
+    .nodes(filteredNodesData)
+    .force("links", d3.forceLink(filteredLinksData).id(datum => datum.name).distance(defaultCircleDistance).strength(0.8))
+    .on("tick", () => {
+        nodes
+            .attr("cx", datum => {
+                constrainNodePosition(datum, defaultCircleRadius);
+                return datum.x;
+            })
+            .attr("cy", datum => {
+                constrainNodePosition(datum, defaultCircleRadius);
+                return datum.y;
+            })
+            .attr('r', node => isSelected(node) ? selectedCircleRadius : defaultCircleRadius)
+            .attr('fill', node => getNodeColor(node.type, isSelected(node)));
+
+        labels
+            .attr("x", datum => datum.x)
+            .attr("y", datum => datum.y)
+            .text(node => node.name)
+            .attr('dx', node => isSelected(node) ? selectedLabelOffset : defaultLabelOffset);
+        
+        links
+            .attr("x1", datum => datum.source.x)
+            .attr("y1", datum => datum.source.y)
+            .attr('marker-end', link => {
+              const adjacentLinkIndices = filteredLinksData
+                .filter(link => (link.source.index == selectedNodeIndex || link.target.index == selectedNodeIndex))
+                .map(link => link.index);
+              return adjacentLinkIndices.includes(link.index) ? 'url(#arrow-selected)' : 'url(#arrow)'
+            })
+            .attr('x2', datum => {
+              const radius = isSelected(datum.target) ? selectedCircleRadius : defaultCircleRadius;
+              const { x } = getLineEndCoordinates(datum.source, datum.target, radius + refX);
+              return x;
+            })
+            .attr('y2', datum => {
+              const radius = isSelected(datum.target) ? selectedCircleRadius : defaultCircleRadius;
+              const { y } = getLineEndCoordinates(datum.source, datum.target, radius + refX);
+              return y;
+            })
+            .attr('stroke', link => {
+              const adjacentLinkIndices = filteredLinksData
+                .filter(link => (link.source.index == selectedNodeIndex || link.target.index == selectedNodeIndex))
+                .map(link => link.index);
+              return adjacentLinkIndices.includes(link.index) ? selectedLinkColor : defaultLinkColor
+            });
+    });
+
+    nodes.call(dragDrop)
+    labels.call(dragDrop)
+
+    nodes.on('click', selectNode)
+    labels.on('click', selectNode)
+
+    simulation.alpha(1).restart();
+}
+
+applyFilter()
 
 // Helpers
+
+function getCollisionRadius(node) {
+  return isSelected(node) ? selectedCircleRadius : defaultCircleRadius;
+}
+
+function selectNode(event) {
+  const selectedNode = event.target.__data__;
+  selectedNodeIndex = (selectedNodeIndex == selectedNode.index) ? null : selectedNode.index;
+}
 
 function constrainNodePosition(node, radius) {
     node.x = Math.max(radius, Math.min(width - radius, node.x));
@@ -292,3 +332,24 @@ function getLineEndCoordinates(source, target, radius) {
     const y = target.y - Math.sin(angle) * radius;
     return { x, y };
 }
+
+const filterSelector = document.querySelector('.filter-selector');
+
+function onFilterSelection(event) {
+    const selector = event.target;
+    const value = selector.value;
+
+    var selectedValues = value !== '' ? JSON.parse(value) : [];
+
+    const filterPredicate = node => {
+      if (selectedValues.length === 0) {
+        return true;
+      } else {
+        return selectedValues.includes(node.type);
+      }
+    };
+
+    applyFilter(filterPredicate)
+}
+
+filterSelector.addEventListener('change', onFilterSelection);
