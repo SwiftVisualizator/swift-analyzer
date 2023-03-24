@@ -32,7 +32,7 @@ public protocol ContentDataSource: AnyObject {
 
 public final class ContentGenerator {
     
-    private let filesToCopy = ["index.html", "d3.min.js", "main.js", "main.css"]
+    private let filesToCopy = ["index.html", "d3.min.js", "main.css"]
     private let fileManager = FileManager.default
     private lazy var targetPath = fileManager.currentDirectoryPath + "/Visualization"
     
@@ -90,8 +90,8 @@ public final class ContentGenerator {
             let linksJsonData = try JSONSerialization.data(withJSONObject: linksData, options: .prettyPrinted)
             
             var jsonString =
-                "var nodesData = " + String(data: nodesJsonData, encoding: .utf8)! + "\n" +
-                "var linksData = " + String(data: linksJsonData, encoding: .utf8)!
+                "var rawNodesData = " + String(data: nodesJsonData, encoding: .utf8)! + "\n" +
+                "var rawLinksData = " + String(data: linksJsonData, encoding: .utf8)!
                         
             let fileUrl = URL(fileURLWithPath: fileName)
             try jsonString.write(to: fileUrl, atomically: true, encoding: .utf8)
