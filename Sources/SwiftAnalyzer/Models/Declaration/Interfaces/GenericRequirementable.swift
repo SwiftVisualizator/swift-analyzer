@@ -17,4 +17,3 @@ public protocol GenericRequirementable: Declaration {
 	var genericRequirements: [GenericRequirement] { get }
 	
 }
-
