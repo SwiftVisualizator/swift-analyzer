@@ -11,9 +11,24 @@ import SwiftSyntax
 // MARK: - Model
 
 /// Enum declaration.
-public struct EnumDeclaration: Declaration, Namable, Keywordable, Wrappable, Modifiable, GenericParametable, Inheritable, GenericRequirementable {
+public struct EnumDeclaration:
+	Declaration,
+	Namable,
+	Keywordable,
+	Wrappable,
+	Modifiable,
+	GenericParametable,
+	Inheritable,
+	GenericRequirementable,
+	LocationMetaHolder,
+	FileMetaHolder
+{
 	
 	// MARK: Exposed properties
+	
+	public var fileMeta: FileMeta?
+	
+	public var locationMeta: LocationMeta?
 	
 	public let wrappers: [Wrapper]
 	

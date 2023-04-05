@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  TypealiasDeclaration.swift
 //  
 //
 //  Created by Roman Nabiullin on 11.03.2023.
@@ -10,9 +10,21 @@ import SwiftSyntax
 
 // MARK: - Model
 
-public struct TypealiasDeclaration: Declaration, Wrappable, Keywordable, Namable, GenericParametable, GenericRequirementable {
+public struct TypealiasDeclaration:
+	Declaration,
+	Wrappable,
+	Keywordable,
+	Namable, GenericParametable,
+	GenericRequirementable,
+	LocationMetaHolder,
+	FileMetaHolder
+{
 	
 	// MARK: Exposed properties
+	
+	public var fileMeta: FileMeta?
+	
+	public var locationMeta: LocationMeta?
 	
 	public let wrappers: [Wrapper]
 	

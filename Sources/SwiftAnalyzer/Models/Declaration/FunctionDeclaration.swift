@@ -11,9 +11,22 @@ import SwiftSyntax
 // MARK: - Model
 
 /// A function declaration.
-public struct FunctionDeclaration: Declaration, Wrappable, Modifiable, Keywordable, GenericParametable, GenericRequirementable {
+public struct FunctionDeclaration:
+	Declaration,
+	Wrappable,
+	Modifiable,
+	Keywordable,
+	GenericParametable,
+	GenericRequirementable,
+	LocationMetaHolder,
+	FileMetaHolder
+{
 	
 	// MARK: Exposed properties
+	
+	public var fileMeta: FileMeta?
+	
+	public var locationMeta: LocationMeta?
 	
 	public let wrappers: [Wrapper]
 	

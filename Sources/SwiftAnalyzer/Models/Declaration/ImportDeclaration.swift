@@ -11,9 +11,21 @@ import SwiftSyntax
 // MARK: - Model
 
 /// An import declaration.
-public struct ImportDeclaration: Declaration, Keywordable, Wrappable, Modifiable, Namable {
+public struct ImportDeclaration:
+	Declaration,
+	Keywordable,
+	Wrappable,
+	Modifiable,
+	Namable,
+	LocationMetaHolder,
+	FileMetaHolder
+{
 	
 	// MARK: Exposed properties
+	
+	public var fileMeta: FileMeta?
+	
+	public var locationMeta: LocationMeta?
 	
 	public let wrappers: [Wrapper]
 	

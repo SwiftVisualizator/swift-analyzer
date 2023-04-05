@@ -11,9 +11,24 @@ import SwiftSyntax
 // MARK: - Model
 
 /// Class or actor declaration.
-public struct ClassDeclaration: Declaration, Namable, Keywordable, Wrappable, Modifiable, GenericParametable, Inheritable, GenericRequirementable {
+public struct ClassDeclaration:
+	Declaration,
+	Namable,
+	Keywordable,
+	Wrappable,
+	Modifiable,
+	GenericParametable,
+	Inheritable,
+	GenericRequirementable,
+	LocationMetaHolder,
+	FileMetaHolder
+{
 	
 	// MARK: Exposed properties
+	
+	public var fileMeta: FileMeta?
+	
+	public var locationMeta: LocationMeta?
 	
 	public let wrappers: [Wrapper]
 	

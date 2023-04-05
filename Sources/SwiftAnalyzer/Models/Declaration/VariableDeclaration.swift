@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  VariableDeclaration.swift
 //  
 //
 //  Created by Roman Nabiullin on 06.02.2023.
@@ -11,9 +11,21 @@ import SwiftSyntax
 // MARK: - Model
 
 /// Variable(including top-level) declaration
-public struct VariableDeclaration: Declaration, Namable, Keywordable, Wrappable, Modifiable {
+public struct VariableDeclaration:
+	Declaration,
+	Namable,
+	Keywordable,
+	Wrappable,
+	Modifiable,
+	LocationMetaHolder,
+	FileMetaHolder
+{
 	
 	// MARK: Exposed properties
+	
+	public var fileMeta: FileMeta?
+	
+	public var locationMeta: LocationMeta?
 	
 	public let wrappers: [Wrapper]
 	

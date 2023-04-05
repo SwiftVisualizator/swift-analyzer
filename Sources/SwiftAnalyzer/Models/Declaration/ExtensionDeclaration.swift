@@ -11,9 +11,22 @@ import SwiftSyntax
 // MARK: - Model
 
 /// An extension declaration.
-public struct ExtensionDeclaration: Declaration, Wrappable, Modifiable, Keywordable, Inheritable, GenericRequirementable {
+public struct ExtensionDeclaration:
+	Declaration,
+	Wrappable,
+	Modifiable,
+	Keywordable,
+	Inheritable,
+	GenericRequirementable,
+	LocationMetaHolder,
+	FileMetaHolder
+{
 	
 	// MARK: Exposed properties
+	
+	public var fileMeta: FileMeta?
+	
+	public var locationMeta: LocationMeta?
 	
 	public let wrappers: [Wrapper]
 	

@@ -11,9 +11,23 @@ import SwiftSyntax
 // MARK: - Model
 
 /// Protocol declaration.
-public struct ProtocolDeclaration: Declaration, Namable, Keywordable, Wrappable, Modifiable, Inheritable, GenericRequirementable {
+public struct ProtocolDeclaration:
+	Declaration,
+	Namable,
+	Keywordable,
+	Wrappable,
+	Modifiable,
+	Inheritable,
+	GenericRequirementable,
+	LocationMetaHolder,
+	FileMetaHolder
+{
 	
-	// MARK: - Exposed properties
+	// MARK: Exposed properties
+	
+	public var fileMeta: FileMeta?
+	
+	public var locationMeta: LocationMeta?
 	
 	public let wrappers: [Wrapper]
 	

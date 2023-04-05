@@ -11,9 +11,21 @@ import SwiftSyntax
 // MARK: - Model
 
 /// An enumeration case declaration.
-public struct CaseDeclaration: Declaration, Wrappable, Modifiable, Keywordable, Namable {
+public struct CaseDeclaration:
+	Declaration,
+	Wrappable,
+	Modifiable,
+	Keywordable,
+	Namable,
+	LocationMetaHolder,
+	FileMetaHolder
+{
 	
 	// MARK: Exposed properties
+	
+	public var fileMeta: FileMeta?
+	
+	public var locationMeta: LocationMeta?
 	
 	public let wrappers: [Wrapper]
 	
