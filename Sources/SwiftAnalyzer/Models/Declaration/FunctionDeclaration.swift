@@ -19,10 +19,13 @@ public struct FunctionDeclaration:
 	GenericParametable,
 	GenericRequirementable,
 	LocationMetaHolder,
-	FileMetaHolder
+	FileMetaHolder,
+	DocStringMetaHolder
 {
 	
 	// MARK: Exposed properties
+	
+	public var docStringMeta: DocStringMeta?
 	
 	public var fileMeta: FileMeta?
 	
@@ -58,6 +61,7 @@ public struct FunctionDeclaration:
 			.map(GenericParameter.init(node:)) ?? []
 		self.genericRequirements = node.genericWhereClause?.requirementList
 			.compactMap(GenericRequirement.init(node:)) ?? []
+		self.docStringMeta = DocStringMeta(node: node)
 	}
 	
 }

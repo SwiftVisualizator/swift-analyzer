@@ -18,10 +18,13 @@ public struct ImportDeclaration:
 	Modifiable,
 	Namable,
 	LocationMetaHolder,
-	FileMetaHolder
+	FileMetaHolder,
+	DocStringMetaHolder
 {
 	
 	// MARK: Exposed properties
+	
+	public var docStringMeta: DocStringMeta?
 	
 	public var fileMeta: FileMeta?
 	
@@ -53,6 +56,7 @@ public struct ImportDeclaration:
 		self.pathComponents = node.path.tokens
 			.filter({ $0.tokenKind != .period })
 			.map(\.text.trimmed)
+		self.docStringMeta = DocStringMeta(node: node)
 	}
 	
 }

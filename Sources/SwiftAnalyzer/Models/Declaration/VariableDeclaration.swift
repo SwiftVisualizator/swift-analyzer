@@ -18,10 +18,13 @@ public struct VariableDeclaration:
 	Wrappable,
 	Modifiable,
 	LocationMetaHolder,
-	FileMetaHolder
+	FileMetaHolder,
+	DocStringMetaHolder
 {
 	
 	// MARK: Exposed properties
+	
+	public var docStringMeta: DocStringMeta?
 	
 	public var fileMeta: FileMeta?
 	
@@ -83,6 +86,7 @@ public struct VariableDeclaration:
 		self.name = node.pattern.description.trimmed
 		self.type = node.typeAnnotation?.type.description.trimmed
 		self.initialValue = node.initializer?.value.description.trimmed
+		self.docStringMeta = DocStringMeta(node: node)
 	}
 	
 }

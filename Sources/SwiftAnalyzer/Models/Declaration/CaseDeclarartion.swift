@@ -18,10 +18,13 @@ public struct CaseDeclaration:
 	Keywordable,
 	Namable,
 	LocationMetaHolder,
-	FileMetaHolder
+	FileMetaHolder,
+	DocStringMetaHolder
 {
 	
 	// MARK: Exposed properties
+	
+	public var docStringMeta: DocStringMeta?
 	
 	public var fileMeta: FileMeta?
 	
@@ -55,6 +58,7 @@ public struct CaseDeclaration:
 		self.keyword = parent.caseKeyword.text.trimmed
 		self.name = node.identifier.text.trimmed
 		self.rawValue = node.rawValue?.value.description.trimmed
+		self.docStringMeta = DocStringMeta(node: node)
 	}
 
 }

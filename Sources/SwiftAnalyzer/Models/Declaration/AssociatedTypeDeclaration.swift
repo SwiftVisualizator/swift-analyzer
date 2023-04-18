@@ -18,10 +18,13 @@ public struct AssociatedTypeDeclaration:
 	Keywordable,
 	Namable,
 	LocationMetaHolder,
-	FileMetaHolder
+	FileMetaHolder,
+	DocStringMetaHolder
 {
 	
 	// MARK: Exposed properties
+	
+	public var docStringMeta: DocStringMeta?
 	
 	public var fileMeta: FileMeta?
 	

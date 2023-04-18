@@ -20,10 +20,13 @@ public struct ProtocolDeclaration:
 	Inheritable,
 	GenericRequirementable,
 	LocationMetaHolder,
-	FileMetaHolder
+	FileMetaHolder,
+	DocStringMetaHolder
 {
 	
 	// MARK: Exposed properties
+	
+	public var docStringMeta: DocStringMeta?
 	
 	public var fileMeta: FileMeta?
 	
@@ -56,6 +59,7 @@ public struct ProtocolDeclaration:
 			.map(\.typeName.description.trimmed) ?? []
 		self.genericRequirements = node.genericWhereClause?.requirementList
 			.compactMap(GenericRequirement.init(node:)) ?? []
+		self.docStringMeta = DocStringMeta(node: node)
 	}
 	
 }
