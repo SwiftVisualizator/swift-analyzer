@@ -11,11 +11,26 @@ import SwiftSyntax
 // MARK: - Model
 
 /// Protocol declaration.
-public struct ProtocolDeclaration: Declaration, Namable, Keywordable, Wrappable, Modifiable, Inheritable, GenericRequirementable {
+public struct ProtocolDeclaration:
+	Declaration,
+	Namable,
+	Keywordable,
+	Wrappable,
+	Modifiable,
+	Inheritable,
+	GenericRequirementable,
+	LocationMetaHolder,
+	FileMetaHolder,
+	DocStringMetaHolder
+{
 	
-	// MARK: - Exposed properties
+	// MARK: Exposed properties
 	
-	public let identifier: String = UUID().uuidString
+	public var docStringMeta: DocStringMeta?
+	
+	public var fileMeta: FileMeta?
+	
+	public var locationMeta: LocationMeta?
 	
 	public let wrappers: [Wrapper]
 	
@@ -44,6 +59,7 @@ public struct ProtocolDeclaration: Declaration, Namable, Keywordable, Wrappable,
 			.map(\.typeName.description.trimmed) ?? []
 		self.genericRequirements = node.genericWhereClause?.requirementList
 			.compactMap(GenericRequirement.init(node:)) ?? []
+		self.docStringMeta = DocStringMeta(node: node)
 	}
 	
 }

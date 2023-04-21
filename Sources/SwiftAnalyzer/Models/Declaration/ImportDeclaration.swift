@@ -11,11 +11,24 @@ import SwiftSyntax
 // MARK: - Model
 
 /// An import declaration.
-public struct ImportDeclaration: Declaration, Keywordable, Wrappable, Modifiable, Namable {
+public struct ImportDeclaration:
+	Declaration,
+	Keywordable,
+	Wrappable,
+	Modifiable,
+	Namable,
+	LocationMetaHolder,
+	FileMetaHolder,
+	DocStringMetaHolder
+{
 	
 	// MARK: Exposed properties
 	
-	public let identifier: String = UUID().uuidString
+	public var docStringMeta: DocStringMeta?
+	
+	public var fileMeta: FileMeta?
+	
+	public var locationMeta: LocationMeta?
 	
 	public let wrappers: [Wrapper]
 	
@@ -43,6 +56,7 @@ public struct ImportDeclaration: Declaration, Keywordable, Wrappable, Modifiable
 		self.pathComponents = node.path.tokens
 			.filter({ $0.tokenKind != .period })
 			.map(\.text.trimmed)
+		self.docStringMeta = DocStringMeta(node: node)
 	}
 	
 }

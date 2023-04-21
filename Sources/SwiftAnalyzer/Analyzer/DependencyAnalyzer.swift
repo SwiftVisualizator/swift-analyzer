@@ -28,6 +28,10 @@ final class DependencyAnalyzer {
 			.map(DeclarationDependencyMemeberKind.class)
 		dependencyMemberKinds += declarations.structDeclarations
 			.map(DeclarationDependencyMemeberKind.struct)
+		dependencyMemberKinds += declarations.enumDeclarations
+			.map(DeclarationDependencyMemeberKind.enum)
+		dependencyMemberKinds += declarations.extensionDeclarations
+			.map(DeclarationDependencyMemeberKind.extension)
 		try directedGraph.insert(contents: dependencyMemberKinds)
 		//
 		// Insert edges

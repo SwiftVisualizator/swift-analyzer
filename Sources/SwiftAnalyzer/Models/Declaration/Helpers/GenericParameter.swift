@@ -12,7 +12,7 @@ import SwiftSyntax
 
 /// Generic parameter declaration. For example, `Header` and `Body: Codable`
 /// from `<Headers, Body: Codable>`.
-public struct GenericParameter: Equatable, Hashable {
+public struct GenericParameter: Equatable, Hashable, Codable {
 
 	// MARK: - Exposed proeprties
 

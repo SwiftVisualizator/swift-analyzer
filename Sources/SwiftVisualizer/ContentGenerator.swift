@@ -34,7 +34,7 @@ public final class ContentGenerator {
     
     private let filesToCopy = ["index.html", "d3.min.js", "main.css"]
     private let fileManager = FileManager.default
-    private lazy var targetPath = fileManager.currentDirectoryPath + "/Visualization"
+    private lazy var targetPath = "/Users/whutao/code/study/swift-analyzer" + "/Visualization"
     
     public weak var dataSource: ContentDataSource?
     

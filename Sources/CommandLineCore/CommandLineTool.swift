@@ -33,12 +33,13 @@ public final class CommandLineTool  {
 	
 	// MARK: Private properties
 	
-	private let arguments: [String]
+	private let projectDirectory: URL
 	
 	// MARK: Init
 	
 	public init(arguments: [String] = CommandLine.arguments) {
-		self.arguments = arguments
+		self.projectDirectory = URL(string: "/Users/whutao/code/study/swift-analyzer")!
+//		self.projectDirectory = arguments.first.flatMap(URL.init(string:))!
 	}
 	
 	// MARK: Exposed properties
@@ -46,70 +47,14 @@ public final class CommandLineTool  {
 	public func run() throws {
 		let parser = Parser()
 		let files = try parser.parse(
-			directory: URL(string: "./")!,
+			directory: projectDirectory,
 			allowedExtensions: ["swift"]
 		)
 		
 		let analyzer = Analyzer()
 		analyzer.consume(files: files)
 		try analyzer.analyze()
-		
-		let enums = analyzer.declarationAssembly.enumDeclarations
-		let classes = analyzer.declarationAssembly.classDeclarations
-		let protocols = analyzer.declarationAssembly.protocolDeclarations
-		let structs = analyzer.declarationAssembly.structDeclarations
-		let variables = analyzer.declarationAssembly.variableDeclarations
-		let typealiases = analyzer.declarationAssembly.typealiasDeclarations
-		let associatedTypes = analyzer.declarationAssembly.associatedTypeDeclarations
-		let extensions = analyzer.declarationAssembly.extensionDeclarations
-		let functions = analyzer.declarationAssembly.functionDeclarations
-		let imports = analyzer.declarationAssembly.importDeclarations
-		
-		print("======================================================")
-		print("======================================================")
-		print("1. Found classes:")
-		print(classes.map({ "  " + $0.description }).joined(separator: "\n"))
-		print("======================================================")
-		print("======================================================")
-		print("2. Found protocols:")
-		print(protocols.map({ "  " + $0.description }).joined(separator: "\n"))
-		print("======================================================")
-		print("======================================================")
-		print("3. Found variables:")
-		print(variables.map({ "  " + $0.description }).joined(separator: "\n"))
-		print("======================================================")
-		print("======================================================")
-		print("4. Found structs:")
-		print(structs.map({ "  " + $0.description }).joined(separator: "\n"))
-		print("======================================================")
-		print("======================================================")
-		print("5. Found enums:")
-		print(enums.map({ "  " + $0.description }).joined(separator: "\n"))
-		print("======================================================")
-		print("======================================================")
-		print("6. Found typealiases:")
-		print(typealiases.map({ "  " + $0.description }).joined(separator: "\n"))
-		print("======================================================")
-		print("======================================================")
-		print("7. Found associated types:")
-		print(associatedTypes.map({ "  " + $0.description }).joined(separator: "\n"))
-		print("======================================================")
-		print("======================================================")
-		print("8. Found extensions:")
-		print(extensions.map({ "  " + $0.description }).joined(separator: "\n"))
-		print("======================================================")
-		print("======================================================")
-		print("9. Found functions:")
-		print(functions.map({ "  " + $0.description }).joined(separator: "\n"))
-		print("======================================================")
-		print("======================================================")
-		print("10. Found imports:")
-		print(imports.map({ "  " + $0.description }).joined(separator: "\n"))
-		print("======================================================")
-		print("======================================================")
-		
-		print(analyzer.rootDeclarationDependencyMembers())
-        
+
         let generator = ContentGenerator()
         generator.dataSource = analyzer
         generator.generate()

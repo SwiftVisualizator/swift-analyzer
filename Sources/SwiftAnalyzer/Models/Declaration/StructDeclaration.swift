@@ -11,12 +11,28 @@ import SwiftSyntax
 // MARK: - Model
 
 /// Struct declaration.
-public struct StructDeclaration: Declaration, Namable, Keywordable, Wrappable, Modifiable, GenericParametable, Inheritable, GenericRequirementable {
+public struct StructDeclaration:
+	Declaration,
+	Namable,
+	Keywordable,
+	Wrappable,
+	Modifiable,
+	GenericParametable,
+	Inheritable,
+	GenericRequirementable,
+	LocationMetaHolder,
+	FileMetaHolder,
+	DocStringMetaHolder
+{
 	
 	// MARK: Exposed properties
 	
-	public let identifier: String = UUID().uuidString
-
+	public var docStringMeta: DocStringMeta?
+	
+	public var fileMeta: FileMeta?
+	
+	public var locationMeta: LocationMeta?
+	
 	public let wrappers: [Wrapper]
 	
 	public let modifiers: [Modifier]
@@ -48,6 +64,7 @@ public struct StructDeclaration: Declaration, Namable, Keywordable, Wrappable, M
 			.map(GenericParameter.init(node:)) ?? []
 		self.genericRequirements = node.genericWhereClause?.requirementList
 			.compactMap(GenericRequirement.init(node:)) ?? []
+		self.docStringMeta = DocStringMeta(node: node)
 	}
 	
 }
