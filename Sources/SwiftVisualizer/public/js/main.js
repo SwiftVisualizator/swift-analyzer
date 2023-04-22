@@ -28,7 +28,7 @@ const height = window.innerHeight
 
 var isDarkTheme = false
 if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-    isDarkTheme = false
+    isDarkTheme = true
 }
 
 // Body configuration
@@ -316,6 +316,7 @@ function getCollisionRadius(node) {
 function selectNode(event) {
   const selectedNode = event.target.__data__;
   selectedNodeIndex = (selectedNodeIndex == selectedNode.index) ? null : selectedNode.index;
+  enableTooltip(selectedNode)
 }
 
 function constrainNodePosition(node, radius) {
@@ -350,6 +351,23 @@ function onFilterSelection(event) {
     };
 
     applyFilter(filterPredicate)
+    enableTooltip(null)
 }
 
 filterSelector.addEventListener('change', onFilterSelection);
+
+function enableTooltip(node) {
+  const enabled = (node != null && node.metadata != null)
+  const tooltip = d3.select("#tooltip");
+  tooltip.classed("hidden", !enabled);
+  
+  if (enabled) {
+    const declaration = tooltip.select('#declaration');
+    
+    const title = tooltip.select('.section-title');
+    title.text(node.name);
+
+    const code = declaration.select('.code');
+    code.text(node.metadata.declaration);
+  }
+}

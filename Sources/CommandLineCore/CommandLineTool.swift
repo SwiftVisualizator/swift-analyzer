@@ -117,19 +117,51 @@ public final class CommandLineTool  {
 }
 
 extension Analyzer: ContentDataSource {
-    public func contentNodes() -> [[String: Any]] {
-        let elements: [any Namable & Keywordable] =
+    public func contentNodes() -> [NodeContentItem] {
+        let roots = self.rootDeclarationDependencyMembers() ?? []
+        
+        let identifiableElements: [any Namable & Keywordable] =
             declarationAssembly.classDeclarations +
             declarationAssembly.structDeclarations +
             declarationAssembly.enumDeclarations +
             declarationAssembly.protocolDeclarations
-        let roots = self.rootDeclarationDependencyMembers() ?? []
         
-        return elements.map {
-            ["name": $0.name, "type": $0.keyword]
-        } + roots.map {
-            ["name": $0.name, "type": "root"]
+        var dict: [String: NodeContentItem] = identifiableElements.reduce(into: [:]) { partialResult, element in
+            partialResult[element.identifier] = NodeContentItem(
+                name: element.name,
+                type: element.keyword
+            )
         }
+        
+        let descriptiveElements: [any Modifiable & CustomStringConvertible] =
+            declarationAssembly.classDeclarations +
+            declarationAssembly.structDeclarations +
+            declarationAssembly.enumDeclarations +
+            declarationAssembly.protocolDeclarations
+        
+        descriptiveElements.forEach { element in
+            dict[element.identifier]?.metadata = NodeContentItem.Metadata(
+                declaration: "\(element)",
+                modifiers: element.modifiers.map(\.name)
+            )
+        }
+        
+        let genericElements: [any GenericParametable] = declarationAssembly.classDeclarations
+        genericElements.forEach { element in
+            if case let generics = element.genericParameters.map({ "\($0)" }), !generics.isEmpty {
+                dict[element.identifier]?.metadata?.generics = generics
+            }
+        }
+        
+        roots.forEach { element in
+            dict[element.name] = NodeContentItem(
+                name: element.name,
+                type: "root"
+            )
+        }
+        
+        return Array(dict.values)
+        
     }
     
     public func contentEdges() -> [[String : Any]] {
