@@ -11,11 +11,25 @@ import SwiftSyntax
 // MARK: - Model
 
 /// An extension declaration.
-public struct ExtensionDeclaration: Declaration, Wrappable, Modifiable, Keywordable, Inheritable, GenericRequirementable {
+public struct ExtensionDeclaration:
+	Declaration,
+	Wrappable,
+	Modifiable,
+	Keywordable,
+	Inheritable,
+	GenericRequirementable,
+	LocationMetaHolder,
+	FileMetaHolder,
+	DocStringMetaHolder
+{
 	
 	// MARK: Exposed properties
 	
-	public let identifier: String = UUID().uuidString
+	public var docStringMeta: DocStringMeta?
+	
+	public var fileMeta: FileMeta?
+	
+	public var locationMeta: LocationMeta?
 	
 	public let wrappers: [Wrapper]
 	
@@ -44,6 +58,7 @@ public struct ExtensionDeclaration: Declaration, Wrappable, Modifiable, Keyworda
 			.map(\.typeName.description.trimmed) ?? []
 		self.genericRequirements = node.genericWhereClause?.requirementList
 			.compactMap(GenericRequirement.init(node:)) ?? []
+		self.docStringMeta = DocStringMeta(node: node)
 	}
 	
 }

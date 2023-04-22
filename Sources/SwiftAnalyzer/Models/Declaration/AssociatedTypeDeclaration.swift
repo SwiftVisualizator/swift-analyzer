@@ -11,11 +11,24 @@ import SwiftSyntax
 // MARK: - Model
 
 /// An associated type declaration.
-public struct AssociatedTypeDeclaration: Declaration, Wrappable, Modifiable, Keywordable, Namable {
+public struct AssociatedTypeDeclaration:
+	Declaration,
+	Wrappable,
+	Modifiable,
+	Keywordable,
+	Namable,
+	LocationMetaHolder,
+	FileMetaHolder,
+	DocStringMetaHolder
+{
 	
 	// MARK: Exposed properties
 	
-	public let identifier: String = UUID().uuidString
+	public var docStringMeta: DocStringMeta?
+	
+	public var fileMeta: FileMeta?
+	
+	public var locationMeta: LocationMeta?
 	
 	public let wrappers: [Wrapper]
 	

@@ -11,7 +11,7 @@ import SwiftSyntax
 // MARK: - Model
 
 /// Declaration modifier. For example, `private(set)`, `open`, `nonmutating`, `static`.
-public struct Modifier: Equatable, Hashable {
+public struct Modifier: Equatable, Hashable, Codable {
 	
 	// MARK: Exposed properties
 	

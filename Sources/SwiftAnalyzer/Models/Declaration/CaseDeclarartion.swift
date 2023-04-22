@@ -11,11 +11,24 @@ import SwiftSyntax
 // MARK: - Model
 
 /// An enumeration case declaration.
-public struct CaseDeclaration: Declaration, Wrappable, Modifiable, Keywordable, Namable {
+public struct CaseDeclaration:
+	Declaration,
+	Wrappable,
+	Modifiable,
+	Keywordable,
+	Namable,
+	LocationMetaHolder,
+	FileMetaHolder,
+	DocStringMetaHolder
+{
 	
 	// MARK: Exposed properties
 	
-	public let identifier: String = UUID().uuidString
+	public var docStringMeta: DocStringMeta?
+	
+	public var fileMeta: FileMeta?
+	
+	public var locationMeta: LocationMeta?
 	
 	public let wrappers: [Wrapper]
 	
@@ -45,6 +58,7 @@ public struct CaseDeclaration: Declaration, Wrappable, Modifiable, Keywordable, 
 		self.keyword = parent.caseKeyword.text.trimmed
 		self.name = node.identifier.text.trimmed
 		self.rawValue = node.rawValue?.value.description.trimmed
+		self.docStringMeta = DocStringMeta(node: node)
 	}
 
 }

@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  VariableDeclaration.swift
 //  
 //
 //  Created by Roman Nabiullin on 06.02.2023.
@@ -11,11 +11,24 @@ import SwiftSyntax
 // MARK: - Model
 
 /// Variable(including top-level) declaration
-public struct VariableDeclaration: Declaration, Namable, Keywordable, Wrappable, Modifiable {
+public struct VariableDeclaration:
+	Declaration,
+	Namable,
+	Keywordable,
+	Wrappable,
+	Modifiable,
+	LocationMetaHolder,
+	FileMetaHolder,
+	DocStringMetaHolder
+{
 	
 	// MARK: Exposed properties
 	
-	public let identifier: String = UUID().uuidString
+	public var docStringMeta: DocStringMeta?
+	
+	public var fileMeta: FileMeta?
+	
+	public var locationMeta: LocationMeta?
 	
 	public let wrappers: [Wrapper]
 	
@@ -73,6 +86,7 @@ public struct VariableDeclaration: Declaration, Namable, Keywordable, Wrappable,
 		self.name = node.pattern.description.trimmed
 		self.type = node.typeAnnotation?.type.description.trimmed
 		self.initialValue = node.initializer?.value.description.trimmed
+		self.docStringMeta = DocStringMeta(node: node)
 	}
 	
 }
@@ -81,11 +95,11 @@ public struct VariableDeclaration: Declaration, Namable, Keywordable, Wrappable,
 
 extension VariableDeclaration {
 	
-	public struct Accessor: Equatable, Hashable {
+	public struct Accessor: Equatable, Hashable, Codable {
 		
 		// MARK: Exposed types
 		
-		public enum AccessorType: String, Equatable, Hashable {
+		public enum AccessorType: String, Equatable, Hashable, Codable {
 			case getter = "get"
 			case setter = "set"
 		}

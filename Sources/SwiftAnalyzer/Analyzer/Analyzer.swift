@@ -68,16 +68,22 @@ public final class Analyzer {
 	
 	public func analyze() throws {
 		try parsedFiles.forEach { file in
-			// print("Processing \"\(file.fileName ?? "UNKNOWN FILE")\" ")
-			
 			let sourceFileSyntax = try SyntaxParser.parse(
 				source: file.content
 			)
 			
-			let rewriter = Rewriter(for: sourceFileSyntax)
-			let forest: [Node] = rewriter.forest
+			let converter: SourceLocationConverter? = {
+				if let fileName = file.fileName {
+					return SourceLocationConverter(
+						file: fileName,
+						tree: sourceFileSyntax
+					)
+				} else {
+					return nil
+				}
+			}()
 			
-			let declarationVisitor = DeclarationVisitor()
+			let declarationVisitor = DeclarationVisitor(sourceLocationConverter: converter)
 			declarationVisitor.walk(sourceFileSyntax)
 			
 			declarationAssembly.merge(declarationVisitor.assembly)
