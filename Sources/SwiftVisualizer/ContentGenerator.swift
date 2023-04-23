@@ -56,9 +56,9 @@ public struct NodeContentItem: Encodable {
 
 public final class ContentGenerator {
     
-    private let filesToCopy = ["d3.min.js"]
+    private let filesToCopy = ["index.html", "d3.min.js", "main.css", "main.js"]
     private let fileManager = FileManager.default
-    private lazy var targetPath = "/Users/whutao/code/study/swift-analyzer" + "/Visualization"
+    private lazy var targetPath = fileManager.currentDirectoryPath + "/Visualization"
     
     public weak var dataSource: ContentDataSource?
     

@@ -38,7 +38,7 @@ public final class CommandLineTool  {
 	// MARK: Init
 	
 	public init(arguments: [String] = CommandLine.arguments) {
-		self.projectDirectory = URL(string: "/Users/whutao/code/study/swift-analyzer")!
+		self.projectDirectory = URL(string: "./")!
 //		self.projectDirectory = arguments.first.flatMap(URL.init(string:))!
 	}
 	
@@ -71,8 +71,8 @@ extension Analyzer: ContentDataSource {
             declarationAssembly.enumDeclarations +
             declarationAssembly.protocolDeclarations
         
-        var dict: [String: NodeContentItem] = identifiableElements.reduce(into: [:]) { partialResult, element in
-            partialResult[element.identifier] = NodeContentItem(
+        var dict: [Int: NodeContentItem] = identifiableElements.reduce(into: [:]) { partialResult, element in
+            partialResult[element.hashValue] = NodeContentItem(
                 name: element.name,
                 type: element.keyword
             )
@@ -85,7 +85,7 @@ extension Analyzer: ContentDataSource {
             declarationAssembly.protocolDeclarations
         
         descriptiveElements.forEach { element in
-            dict[element.identifier]?.metadata = NodeContentItem.Metadata(
+            dict[element.hashValue]?.metadata = NodeContentItem.Metadata(
                 declaration: "\(element)",
                 modifiers: element.modifiers.map(\.name)
             )
@@ -94,12 +94,12 @@ extension Analyzer: ContentDataSource {
         let genericElements: [any GenericParametable] = declarationAssembly.classDeclarations
         genericElements.forEach { element in
             if case let generics = element.genericParameters.map({ "\($0)" }), !generics.isEmpty {
-                dict[element.identifier]?.metadata?.generics = generics
+                dict[element.hashValue]?.metadata?.generics = generics
             }
         }
         
         roots.forEach { element in
-            dict[element.name] = NodeContentItem(
+            dict[element.hashValue] = NodeContentItem(
                 name: element.name,
                 type: "root"
             )
