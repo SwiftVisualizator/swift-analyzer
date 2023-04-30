@@ -28,7 +28,7 @@ const height = window.innerHeight
 
 var isDarkTheme = false
 if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-    isDarkTheme = true
+    isDarkTheme = false
 }
 
 // Body configuration
@@ -102,7 +102,7 @@ function getNodeColor(nodeType, isSelected = false) {
 }
 
 const defaultCircleRadius = 12
-const selectedCircleRadius = 16
+const selectedCircleRadius = 20
 const defaultCircleDistance = defaultCircleRadius * 20
 
 // Link configuration
@@ -316,7 +316,7 @@ function getCollisionRadius(node) {
 function selectNode(event) {
   const selectedNode = event.target.__data__;
   selectedNodeIndex = (selectedNodeIndex == selectedNode.index) ? null : selectedNode.index;
-  enableTooltip(selectedNode)
+  enableTooltip(selectedNodeIndex == null ? null : selectedNode)
 }
 
 function constrainNodePosition(node, radius) {
@@ -357,17 +357,48 @@ function onFilterSelection(event) {
 filterSelector.addEventListener('change', onFilterSelection);
 
 function enableTooltip(node) {
-  const enabled = (node != null && node.metadata != null)
+  const enabled = (node != null && node.metadata != null);
   const tooltip = d3.select("#tooltip");
   tooltip.classed("hidden", !enabled);
-  
+
   if (enabled) {
-    const declaration = tooltip.select('#declaration');
-    
-    const title = tooltip.select('.section-title');
+    const declaration = tooltip.select("#declaration");
+
+    const title = tooltip.select(".section-title");
     title.text(node.name);
 
-    const code = declaration.select('.code');
-    code.text(node.metadata.declaration);
+    const code = declaration.select(".code");
+    let declarationText = "";
+
+    // Check if 'docs' property exists and add it to the declarationText
+    if (node.metadata.docs) {
+      declarationText += `<span class="comment">${node.metadata.docs}</span>\n`;
+    }
+
+    // Add modifiers to the declarationText
+    if (node.metadata.modifiers) {
+      node.metadata.modifiers.forEach((modifier) => {
+        declarationText += `<span class="modifier">${modifier}</span> `;
+      });
+    }
+
+    // Add type and name to the declarationText
+    declarationText += `<span class="type">${node.type}</span> <span class="identifier">${node.name}</span>`;
+
+    // Add generics to the declarationText if not empty
+    if (node.metadata.generics && node.metadata.generics.length > 0) {
+      declarationText += `<span class="generics">&lt;${node.metadata.generics.join(', ')}&gt;</span>`;
+    }
+
+    // Add inheritance to the declarationText if not empty
+    if (node.metadata.inheritance && node.metadata.inheritance.length > 0) {
+      declarationText += `: <span class="inheritance">${node.metadata.inheritance.join(', ')}</span>`;
+    }
+
+    code.html(declarationText);
+
+    // Add location information to the tooltip
+    const location = tooltip.select(".location");
+    location.text(`Located at ${node.metadata.location}`);
   }
 }

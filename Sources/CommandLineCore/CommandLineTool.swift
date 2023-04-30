@@ -98,6 +98,41 @@ extension Analyzer: ContentDataSource {
             }
         }
         
+        let locationElements: [any LocationMetaHolder & FileMetaHolder] =
+            declarationAssembly.classDeclarations +
+            declarationAssembly.structDeclarations +
+            declarationAssembly.enumDeclarations +
+            declarationAssembly.protocolDeclarations
+        
+        locationElements.forEach { element in
+            if let fileMeta = element.fileMeta, let locationMeta = element.locationMeta {
+                let location = "\(fileMeta.name):\(locationMeta.startRow)"
+                dict[element.hashValue]?.metadata?.location = location
+            }
+        }
+        
+        let docsElements: [any DocStringMetaHolder] =
+            declarationAssembly.classDeclarations +
+            declarationAssembly.structDeclarations +
+            declarationAssembly.enumDeclarations +
+            declarationAssembly.protocolDeclarations
+        
+        docsElements.forEach { element in
+            if let docsMeta = element.docStringMeta {
+                dict[element.hashValue]?.metadata?.docs = docsMeta.docString
+            }
+        }
+        
+        let inheritanceElements: [any Inheritable] =
+            declarationAssembly.classDeclarations +
+            declarationAssembly.structDeclarations +
+            declarationAssembly.enumDeclarations +
+            declarationAssembly.protocolDeclarations
+        
+        inheritanceElements.forEach { element in
+            dict[element.hashValue]?.metadata?.inheritance = element.inheritances
+        }
+        
         roots.forEach { element in
             dict[element.hashValue] = NodeContentItem(
                 name: element.name,

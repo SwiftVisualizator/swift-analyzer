@@ -34,7 +34,10 @@ public struct NodeContentItem: Encodable {
     public struct Metadata: Encodable {
         public var declaration: String?
         public var modifiers: [String]?
+        public var inheritance: [String]?
         public var generics: [String]?
+        public var location: String?
+        public var docs: String?
         
         public init(declaration: String? = nil, modifiers: [String]? = nil) {
             self.declaration = declaration
@@ -56,7 +59,7 @@ public struct NodeContentItem: Encodable {
 
 public final class ContentGenerator {
     
-    private let filesToCopy = ["index.html", "d3.min.js", "main.css", "main.js"]
+    private let filesToCopy: [String] = []
     private let fileManager = FileManager.default
     private lazy var targetPath = fileManager.currentDirectoryPath + "/Visualization"
     
