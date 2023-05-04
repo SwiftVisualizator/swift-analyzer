@@ -26,15 +26,42 @@
 import Foundation
 
 public protocol ContentDataSource: AnyObject {
-    func contentNodes() -> [[String: Any]]
+    func contentNodes() -> [NodeContentItem]
     func contentEdges() -> [[String: Any]]
 }
 
+public struct NodeContentItem: Encodable {
+    public struct Metadata: Encodable {
+        public var declaration: String?
+        public var modifiers: [String]?
+        public var inheritance: [String]?
+        public var generics: [String]?
+        public var location: String?
+        public var docs: String?
+        
+        public init(declaration: String? = nil, modifiers: [String]? = nil) {
+            self.declaration = declaration
+            self.modifiers = modifiers
+        }
+    }
+    
+    public var name: String?
+    public var type: String?
+    public var metadata: Metadata?
+    
+    public init(name: String? = nil, type: String? = nil, metadata: Metadata? = nil) {
+        self.name = name
+        self.type = type
+        self.metadata = metadata
+    }
+}
+
+
 public final class ContentGenerator {
     
-    private let filesToCopy = ["index.html", "d3.min.js", "main.css"]
+    private let filesToCopy: [String] = []
     private let fileManager = FileManager.default
-    private lazy var targetPath = "/Users/whutao/code/study/swift-analyzer" + "/Visualization"
+    private lazy var targetPath = fileManager.currentDirectoryPath + "/Visualization"
     
     public weak var dataSource: ContentDataSource?
     
@@ -84,15 +111,17 @@ public final class ContentGenerator {
         writeGraphToFile(nodesData: nodesData, linksData: linksData, fileName: jsonFilePath)
     }
     
-    func writeGraphToFile(nodesData: [[String: Any]], linksData: [[String: Any]], fileName: String) {
+    func writeGraphToFile(nodesData: [NodeContentItem], linksData: [[String: Any]], fileName: String) {
         do {
-            let nodesJsonData = try JSONSerialization.data(withJSONObject: nodesData, options: .prettyPrinted)
+            let encoder = JSONEncoder()
+            encoder.outputFormatting = .prettyPrinted
+            
+            let nodesJsonData = try encoder.encode(nodesData)
             let linksJsonData = try JSONSerialization.data(withJSONObject: linksData, options: .prettyPrinted)
             
             var jsonString =
-                "var rawNodesData = " + String(data: nodesJsonData, encoding: .utf8)! + "\n" +
-                "var rawLinksData = " + String(data: linksJsonData, encoding: .utf8)!
-                        
+                "var rawNodesData = " + String(data: nodesJsonData, encoding: .utf8)! + ";" +
+                "var rawLinksData = " + String(data: linksJsonData, encoding: .utf8)! + ";"
             let fileUrl = URL(fileURLWithPath: fileName)
             try jsonString.write(to: fileUrl, atomically: true, encoding: .utf8)
             

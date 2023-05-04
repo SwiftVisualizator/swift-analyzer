@@ -38,7 +38,7 @@ public final class CommandLineTool  {
 	// MARK: Init
 	
 	public init(arguments: [String] = CommandLine.arguments) {
-		self.projectDirectory = URL(string: "/Users/whutao/code/study/swift-analyzer")!
+		self.projectDirectory = URL(string: "./")!
 //		self.projectDirectory = arguments.first.flatMap(URL.init(string:))!
 	}
 	
@@ -62,19 +62,86 @@ public final class CommandLineTool  {
 }
 
 extension Analyzer: ContentDataSource {
-    public func contentNodes() -> [[String: Any]] {
-        let elements: [any Namable & Keywordable] =
+    public func contentNodes() -> [NodeContentItem] {
+        let roots = self.rootDeclarationDependencyMembers() ?? []
+        
+        let identifiableElements: [any Namable & Keywordable] =
             declarationAssembly.classDeclarations +
             declarationAssembly.structDeclarations +
             declarationAssembly.enumDeclarations +
             declarationAssembly.protocolDeclarations
-        let roots = self.rootDeclarationDependencyMembers() ?? []
         
-        return elements.map {
-            ["name": $0.name, "type": $0.keyword]
-        } + roots.map {
-            ["name": $0.name, "type": "root"]
+        var dict: [Int: NodeContentItem] = identifiableElements.reduce(into: [:]) { partialResult, element in
+            partialResult[element.hashValue] = NodeContentItem(
+                name: element.name,
+                type: element.keyword
+            )
         }
+        
+        let descriptiveElements: [any Modifiable & CustomStringConvertible] =
+            declarationAssembly.classDeclarations +
+            declarationAssembly.structDeclarations +
+            declarationAssembly.enumDeclarations +
+            declarationAssembly.protocolDeclarations
+        
+        descriptiveElements.forEach { element in
+            dict[element.hashValue]?.metadata = NodeContentItem.Metadata(
+                declaration: "\(element)",
+                modifiers: element.modifiers.map(\.name)
+            )
+        }
+        
+        let genericElements: [any GenericParametable] = declarationAssembly.classDeclarations
+        genericElements.forEach { element in
+            if case let generics = element.genericParameters.map({ "\($0)" }), !generics.isEmpty {
+                dict[element.hashValue]?.metadata?.generics = generics
+            }
+        }
+        
+        let locationElements: [any LocationMetaHolder & FileMetaHolder] =
+            declarationAssembly.classDeclarations +
+            declarationAssembly.structDeclarations +
+            declarationAssembly.enumDeclarations +
+            declarationAssembly.protocolDeclarations
+        
+        locationElements.forEach { element in
+            if let fileMeta = element.fileMeta, let locationMeta = element.locationMeta {
+                let location = "\(fileMeta.name):\(locationMeta.startRow)"
+                dict[element.hashValue]?.metadata?.location = location
+            }
+        }
+        
+        let docsElements: [any DocStringMetaHolder] =
+            declarationAssembly.classDeclarations +
+            declarationAssembly.structDeclarations +
+            declarationAssembly.enumDeclarations +
+            declarationAssembly.protocolDeclarations
+        
+        docsElements.forEach { element in
+            if let docsMeta = element.docStringMeta {
+                dict[element.hashValue]?.metadata?.docs = docsMeta.docString
+            }
+        }
+        
+        let inheritanceElements: [any Inheritable] =
+            declarationAssembly.classDeclarations +
+            declarationAssembly.structDeclarations +
+            declarationAssembly.enumDeclarations +
+            declarationAssembly.protocolDeclarations
+        
+        inheritanceElements.forEach { element in
+            dict[element.hashValue]?.metadata?.inheritance = element.inheritances
+        }
+        
+        roots.forEach { element in
+            dict[element.hashValue] = NodeContentItem(
+                name: element.name,
+                type: "root"
+            )
+        }
+        
+        return Array(dict.values)
+        
     }
     
     public func contentEdges() -> [[String : Any]] {

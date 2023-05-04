@@ -6,6 +6,26 @@
 </head>
 <body>
     <main>
+        <div class="toolbar">
+            <select class="filter-selector">
+              <option value=''>All Types</option>
+              <option value='["class"]'>Class</option>
+              <option value='["struct"]'>Struct</option>
+              <option value='["enum"]'>Enum</option>
+              <option value='["protocol"]'>Protocol</option>
+              <option value='["class", "protocol"]'>Class + Protocol</option>
+              <option value='["enum", "protocol"]'>Enum + Protocol</option>
+            </select>
+          </div>
+        <div id="tooltip" class="hidden">
+            <div class="section">
+              <div class="section-title"></div>
+              <div id="declaration">
+                <pre class="code"></pre>
+              </div>
+              <div class="location"></div>
+            </div>
+        </div>
         <svg>
             <g id="links"></g>
             <g id="nodes"></g>
