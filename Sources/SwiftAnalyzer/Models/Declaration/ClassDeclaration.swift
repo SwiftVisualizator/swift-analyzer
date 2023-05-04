@@ -56,7 +56,7 @@ public struct ClassDeclaration:
 			.map(Wrapper.init(node:)) ?? []
 		self.modifiers = node.modifiers?
 			.map(Modifier.init(node:)) ?? []
-		self.keyword = node.classOrActorKeyword.text.trimmed
+		self.keyword = node.classKeyword.text.trimmed
 		self.name = node.identifier.text.trimmed
 		self.inheritances = node.inheritanceClause?.inheritedTypeCollection
 			.map(\.typeName.description.trimmed) ?? []

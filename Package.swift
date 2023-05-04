@@ -4,7 +4,7 @@ import PackageDescription
 let package = Package(
     name: "SwiftAnalyzer",
     platforms: [
-        .macOS(.v10_13)
+        .macOS(.v10_15)
     ],
     products: [
         .executable(
@@ -15,7 +15,7 @@ let package = Package(
     dependencies: [
         .package(
             url: "https://github.com/apple/swift-syntax",
-            branch: "0.50700.1"
+            branch: "508.0.0"
         )
     ],
     targets: [

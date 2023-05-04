@@ -54,7 +54,7 @@ public struct TypealiasDeclaration:
 			.map(Modifier.init(node:)) ?? []
 		self.keyword = node.typealiasKeyword.text.trimmed
 		self.name = node.identifier.text.trimmed
-		self.initialValue = node.initializer?.value.description.trimmed
+		self.initialValue = node.initializer.value.description.trimmed
 		self.genericParameters = node.genericParameterClause?.genericParameterList
 			.map(GenericParameter.init(node:)) ?? []
 		self.genericRequirements = node.genericWhereClause?.requirementList

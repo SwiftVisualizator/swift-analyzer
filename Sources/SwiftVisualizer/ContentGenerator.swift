@@ -119,7 +119,7 @@ public final class ContentGenerator {
             let nodesJsonData = try encoder.encode(nodesData)
             let linksJsonData = try JSONSerialization.data(withJSONObject: linksData, options: .prettyPrinted)
             
-            var jsonString =
+            let jsonString =
                 "var rawNodesData = " + String(data: nodesJsonData, encoding: .utf8)! + ";" +
                 "var rawLinksData = " + String(data: linksJsonData, encoding: .utf8)! + ";"
             let fileUrl = URL(fileURLWithPath: fileName)

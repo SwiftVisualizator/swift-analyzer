@@ -25,6 +25,7 @@ final class DeclarationVisitor: SyntaxVisitor {
 	
 	init(sourceLocationConverter: SourceLocationConverter?) {
 		self.sourceLocationConverter = sourceLocationConverter
+		super.init(viewMode: .sourceAccurate)
 	}
 	
 	// MARK: Helper methods

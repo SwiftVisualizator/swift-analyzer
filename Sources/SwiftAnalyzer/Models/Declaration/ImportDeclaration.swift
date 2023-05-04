@@ -53,7 +53,7 @@ public struct ImportDeclaration:
 		self.modifiers = node.modifiers?
 			.map(Modifier.init(node:)) ?? []
 		self.keyword = node.importTok.text.trimmed
-		self.pathComponents = node.path.tokens
+		self.pathComponents = node.path.tokens(viewMode: .sourceAccurate)
 			.filter({ $0.tokenKind != .period })
 			.map(\.text.trimmed)
 		self.docStringMeta = DocStringMeta(node: node)
