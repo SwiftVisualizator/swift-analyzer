@@ -59,7 +59,7 @@ public struct NodeContentItem: Encodable {
 
 public final class ContentGenerator {
     
-    private let filesToCopy: [String] = []
+    private let filesToCopy: [String] = ["index.html", "d3.min.js", "main.css", "main.js"]
     private let fileManager = FileManager.default
     private lazy var targetPath = fileManager.currentDirectoryPath + "/Visualization"
     
