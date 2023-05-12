@@ -17,6 +17,8 @@ public enum DeclarationDependencyMemeberKind: Equatable, Hashable {
 	
 	case `enum`(EnumDeclaration)
 	
+	case `actor`(ActorDeclaration)
+	
 	case `class`(ClassDeclaration)
 	
 	case `struct`(StructDeclaration)
@@ -33,6 +35,8 @@ public enum DeclarationDependencyMemeberKind: Equatable, Hashable {
 		case let .unknown(declarationName: declarationName):
 			return declarationName
 		case let .enum(declaration):
+			return declaration.name
+		case let .actor(declaration):
 			return declaration.name
 		case let .class(declaration):
 			return declaration.name
@@ -51,6 +55,8 @@ public enum DeclarationDependencyMemeberKind: Equatable, Hashable {
 		case .unknown:
 			return []
 		case let .enum(declaration):
+			return declaration.inheritances
+		case let .actor(declaration):
 			return declaration.inheritances
 		case let .class(declaration):
 			return declaration.inheritances

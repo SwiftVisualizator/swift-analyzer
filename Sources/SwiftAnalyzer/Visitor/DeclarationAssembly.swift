@@ -26,6 +26,9 @@ public final class DeclarationAssembly {
 	/// Found enum declarations.
 	public internal(set) var enumDeclarations: [EnumDeclaration] = []
 	
+	/// Found actor declarations.
+	public internal(set) var actorDeclarations: [ActorDeclaration] = []
+	
 	/// Found class declarations.
 	public internal(set) var classDeclarations: [ClassDeclaration] = []
 	
@@ -55,6 +58,7 @@ public final class DeclarationAssembly {
 	/// Adds(in-place) content of other assembly to this one.
 	public func merge(_ other: DeclarationAssembly) {
 		self.enumDeclarations += other.enumDeclarations
+		self.actorDeclarations += other.actorDeclarations
 		self.classDeclarations += other.classDeclarations
 		self.importDeclarations += other.importDeclarations
 		self.protocolDeclarations += other.protocolDeclarations

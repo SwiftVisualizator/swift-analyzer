@@ -20,4 +20,12 @@ extension SyntaxProtocol {
 		return nil
 	}
 	
+	var declarationParentNameChain: [String] {
+		return sequence(
+			first: firstDeclarationParent,
+			next: { $0?.firstDeclarationParent }
+		)
+		.compactMap(\.?.declarationName)
+	}
+	
 }
