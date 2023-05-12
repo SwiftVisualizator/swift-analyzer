@@ -2,7 +2,7 @@
 //  File.swift
 //  
 //
-//  Created by Roman Nabiullin on 11.03.2023.
+//  Created by Roman Nabiullin on 12.05.2023.
 //
 
 import Foundation
@@ -10,14 +10,15 @@ import SwiftSyntax
 
 // MARK: - Model
 
-/// An extension declaration.
-public struct ExtensionDeclaration:
+/// Actor declaration.
+public struct ActorDeclaration:
 	Declaration,
-	Wrappable,
-	Modifiable,
-	Keywordable,
 	Namable,
 	NestedlyNamable,
+	Keywordable,
+	Wrappable,
+	Modifiable,
+	GenericParametable,
 	Inheritable,
 	GenericRequirementable,
 	LocationMetaHolder,
@@ -39,40 +40,35 @@ public struct ExtensionDeclaration:
 	
 	public let keyword: String
 	
-	public var name: String {
-		return extendedType
-	}
+	public let name: String
 	
-	public var nestedName: String {
-		return nestedExtendedType
-	}
-	
-	/// The type that this extension extends. For example, `UserModel` in `extension UserModel: Codable { }`.
-	public let extendedType: String
-	
-	public let nestedExtendedType: String
+	public let nestedName: String
 	
 	public let inheritances: [String]
 	
+	public let genericParameters: [GenericParameter]
+	
 	public let genericRequirements: [GenericRequirement]
-
+	
 	// MARK: Init
 	
-	init(node: ExtensionDeclSyntax) {
+	/// Creates an instance from SwiftSyntax model.
+	init(node: ActorDeclSyntax) {
 		self.wrappers = node.attributes?
 			.compactMap { $0.as(AttributeSyntax.self) }
 			.map(Wrapper.init(node:)) ?? []
 		self.modifiers = node.modifiers?
 			.map(Modifier.init(node:)) ?? []
-		self.keyword = node.extensionKeyword.text.trimmed
-		self.extendedType = node.extendedType.description.trimmed
-		self.nestedExtendedType = (
+		self.keyword = node.actorKeyword.text.trimmed
+		self.name = node.identifier.text.trimmed
+		self.nestedName = (
 			node.declarationParentNameChain.reversed() +
-			[node.extendedType.description.trimmed]
-		)
-		.joined(separator: ".")
+			[node.identifier.text.trimmed]
+		).joined(separator: ".")
 		self.inheritances = node.inheritanceClause?.inheritedTypeCollection
 			.map(\.typeName.description.trimmed) ?? []
+		self.genericParameters = node.genericParameterClause?.genericParameterList
+			.map(GenericParameter.init(node:)) ?? []
 		self.genericRequirements = node.genericWhereClause?.requirementList
 			.compactMap(GenericRequirement.init(node:)) ?? []
 		self.docStringMeta = DocStringMeta(node: node)
@@ -82,15 +78,20 @@ public struct ExtensionDeclaration:
 
 // MARK: - CustomStringConvertible
 
-extension ExtensionDeclaration: CustomStringConvertible {
+extension ActorDeclaration: CustomStringConvertible {
 	
 	public var description: String {
 		var result: String = ""
 		result += (
 			wrappers.map(\.description) +
 			modifiers.map(\.description) +
-			[keyword, extendedType]
+			[keyword, name]
 		).joined(separator: " ").asString
+		if !genericParameters.isEmpty {
+			result += "<"
+			result += genericParameters.map(\.description).joined(separator: ", ")
+			result += ">"
+		}
 		if !inheritances.isEmpty {
 			result += ": "
 			result += inheritances.joined(separator: ", ")

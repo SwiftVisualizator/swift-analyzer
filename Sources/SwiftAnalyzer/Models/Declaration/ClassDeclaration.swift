@@ -10,10 +10,11 @@ import SwiftSyntax
 
 // MARK: - Model
 
-/// Class or actor declaration.
+/// Class declaration.
 public struct ClassDeclaration:
 	Declaration,
 	Namable,
+	NestedlyNamable,
 	Keywordable,
 	Wrappable,
 	Modifiable,
@@ -41,6 +42,8 @@ public struct ClassDeclaration:
 	
 	public let name: String
 	
+	public let nestedName: String
+	
 	public let inheritances: [String]
 	
 	public let genericParameters: [GenericParameter]
@@ -58,6 +61,10 @@ public struct ClassDeclaration:
 			.map(Modifier.init(node:)) ?? []
 		self.keyword = node.classKeyword.text.trimmed
 		self.name = node.identifier.text.trimmed
+		self.nestedName = (
+			node.declarationParentNameChain.reversed() +
+			[node.identifier.text.trimmed]
+		).joined(separator: ".")
 		self.inheritances = node.inheritanceClause?.inheritedTypeCollection
 			.map(\.typeName.description.trimmed) ?? []
 		self.genericParameters = node.genericParameterClause?.genericParameterList

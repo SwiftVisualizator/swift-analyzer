@@ -14,6 +14,7 @@ import SwiftSyntax
 public struct StructDeclaration:
 	Declaration,
 	Namable,
+	NestedlyNamable,
 	Keywordable,
 	Wrappable,
 	Modifiable,
@@ -41,6 +42,8 @@ public struct StructDeclaration:
 	
 	public let name: String
 	
+	public let nestedName: String
+	
 	public let inheritances: [String]
 	
 	public let genericParameters: [GenericParameter]
@@ -58,6 +61,10 @@ public struct StructDeclaration:
 			.map(Modifier.init(node:)) ?? []
 		self.keyword = node.structKeyword.text.trimmed
 		self.name = node.identifier.text.trimmed
+		self.nestedName = (
+			node.declarationParentNameChain.reversed() +
+			[node.identifier.text.trimmed]
+		).joined(separator: ".")
 		self.inheritances = node.inheritanceClause?.inheritedTypeCollection
 			.map(\.typeName.description.trimmed) ?? []
 		self.genericParameters = node.genericParameterClause?.genericParameterList

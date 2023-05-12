@@ -17,6 +17,7 @@ public struct AssociatedTypeDeclaration:
 	Modifiable,
 	Keywordable,
 	Namable,
+	NestedlyNamable,
 	LocationMetaHolder,
 	FileMetaHolder,
 	DocStringMetaHolder
@@ -38,6 +39,8 @@ public struct AssociatedTypeDeclaration:
 	
 	public let name: String
 	
+	public var nestedName: String
+	
 	// MARK: Init
 	
 	/// Creates an instance from SwiftSyntax model.
@@ -49,6 +52,11 @@ public struct AssociatedTypeDeclaration:
 			.map(Modifier.init(node:)) ?? []
 		self.keyword = node.associatedtypeKeyword.text.trimmed
 		self.name = node.identifier.text.trimmed
+		self.nestedName = (
+			node.declarationParentNameChain.reversed() +
+			[node.identifier.text.trimmed]
+		)
+		.joined(separator: ".")
 	}
 	
 }

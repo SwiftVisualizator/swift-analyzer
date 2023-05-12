@@ -26,6 +26,7 @@
 import Foundation
 import SwiftAnalyzer
 import SwiftVisualizer
+import Utils
 
 // MARK: - Tool
 
@@ -38,8 +39,13 @@ public final class CommandLineTool  {
 	// MARK: Init
 	
 	public init(arguments: [String] = CommandLine.arguments) {
+		guard
+			let url = arguments.first.flatMap(URL.init(string:))
+		else {
+			log.severe("Please, provide a valid URL in the first argument.")
+			fatalError()
+		}
 		self.projectDirectory = URL(string: "./")!
-//		self.projectDirectory = arguments.first.flatMap(URL.init(string:))!
 	}
 	
 	// MARK: Exposed properties
@@ -54,11 +60,12 @@ public final class CommandLineTool  {
 		let analyzer = Analyzer()
 		analyzer.consume(files: files)
 		try analyzer.analyze()
-
-        let generator = ContentGenerator()
-        generator.dataSource = analyzer
-        generator.generate()
+		
+		let generator = ContentGenerator()
+		generator.dataSource = analyzer
+		generator.generate()
 	}
+	
 }
 
 extension Analyzer: ContentDataSource {

@@ -14,6 +14,14 @@ import SwiftSyntax
 /// It stores declarations like classes, protocols, extensions etc.
 final class DeclarationVisitor: SyntaxVisitor {
 	
+	struct A {
+		struct B {
+			struct C: Hashable {
+				
+			}
+		}
+	}
+	
 	// MARK: Exposed properties
 	
 	/// Found declarations.

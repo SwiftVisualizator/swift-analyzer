@@ -33,6 +33,10 @@ public struct DeclarationDependencyMember: Hashable {
 		self.kind = memberKind
 	}
 	
+	init(actor declaration: ActorDeclaration) {
+		self.kind = .actor(declaration)
+	}
+	
 	init(class declaration: ClassDeclaration) {
 		self.kind = .class(declaration)
 	}
