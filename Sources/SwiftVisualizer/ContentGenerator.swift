@@ -60,13 +60,20 @@ public struct NodeContentItem: Encodable {
 public final class ContentGenerator {
     
     private let filesToCopy: [String] = ["index.html", "d3.min.js", "main.css", "main.js"]
-    private let fileManager = FileManager.default
-    private lazy var targetPath = fileManager.currentDirectoryPath + "/Visualization"
+	private let fileManager: FileManager
+	private let targetPath: String
     
     public weak var dataSource: ContentDataSource?
     
-    public init(dataSource: ContentDataSource? = nil) {
+	public init(
+		dataSource: ContentDataSource? = nil,
+		targetPath: String? = nil
+	) {
+		let fileManager = FileManager.default
+		
+		self.fileManager = fileManager
         self.dataSource = dataSource
+		self.targetPath = targetPath ?? (fileManager.currentDirectoryPath + "/Visualization")
     }
     
     public func generate() {

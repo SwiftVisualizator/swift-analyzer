@@ -36,16 +36,22 @@ public final class CommandLineTool  {
 	
 	private let projectDirectory: URL
 	
+	private let outputURL: URL
+	
 	// MARK: Init
 	
 	public init(arguments: [String] = CommandLine.arguments) {
 		guard
-			let url = arguments.first.flatMap(URL.init(string:))
+			arguments.count == 3,
+			let inspectURL = URL(string: arguments[1]),
+			let outputURL = URL(string: arguments[2])
 		else {
-			log.severe("Please, provide a valid URL in the first argument.")
+			print("Please, provide a valid URL in the first argument.")
+			print("The command should be \"swift run swift-analyzer PATH_TO\"")
 			fatalError()
 		}
-		self.projectDirectory = URL(string: "./")!
+		self.projectDirectory = inspectURL
+		self.outputURL = outputURL
 	}
 	
 	// MARK: Exposed properties
@@ -61,7 +67,9 @@ public final class CommandLineTool  {
 		analyzer.consume(files: files)
 		try analyzer.analyze()
 		
-		let generator = ContentGenerator()
+		let generator = ContentGenerator(
+			targetPath: outputURL.absoluteString
+		)
 		generator.dataSource = analyzer
 		generator.generate()
 	}
