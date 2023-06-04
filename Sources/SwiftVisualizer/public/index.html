@@ -9,12 +9,15 @@
         <div class="toolbar">
             <select class="filter-selector">
               <option value=''>All Types</option>
+			  <option value='["actor"]'>Actor</option>
               <option value='["class"]'>Class</option>
               <option value='["struct"]'>Struct</option>
               <option value='["enum"]'>Enum</option>
               <option value='["protocol"]'>Protocol</option>
+			  <option value='["actor", "protocol"]'>Actor + Protocol</option>
               <option value='["class", "protocol"]'>Class + Protocol</option>
               <option value='["enum", "protocol"]'>Enum + Protocol</option>
+			  <option value='["struct", "protocol"]'>Struct + Protocol</option>
             </select>
           </div>
         <div id="tooltip" class="hidden">

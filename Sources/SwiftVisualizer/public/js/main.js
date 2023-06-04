@@ -102,7 +102,7 @@ function getNodeColor(nodeType, isSelected = false) {
 }
 
 const defaultCircleRadius = 12
-const selectedCircleRadius = 20
+const selectedCircleRadius = 22
 const defaultCircleDistance = defaultCircleRadius * 20
 
 // Link configuration
@@ -241,7 +241,8 @@ function applyFilter(filterFunction = node => true) {
     .join(
       enter => enter.append('text')
         .text(node => node.name)
-        .attr('font-size', 15)
+        .attr('font-weight', 700)
+        .attr('font-size', 16)
         .attr('dx', defaultLabelOffset),
       update => update,
       exit => exit.remove()
